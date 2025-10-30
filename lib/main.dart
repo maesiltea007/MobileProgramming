@@ -1,5 +1,16 @@
 import 'package:flutter/material.dart';
 
+import 'screens/home_page.dart';
+import 'screens/rank_page.dart';
+import 'screens/scan_page.dart';
+import 'screens/color_picker_page.dart';
+import 'screens/library_page.dart';
+import 'screens/consulting_page.dart';
+import 'screens/login_page.dart';
+import 'screens/signup_page.dart';
+import 'screens/my_page.dart';
+import 'screens/design_page.dart';
+
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
@@ -8,7 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '명예의 전당 앱',
+      title: 'Team Project App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const MainNavigator(),
@@ -48,22 +59,17 @@ class _MainNavigatorState extends State<MainNavigator> {
     '컨설팅',
   ];
 
-  void _onItemTapped(int index) {
-    setState(() => _selectedIndex = index);
-  }
+  void _onItemTapped(int index) => setState(() => _selectedIndex = index);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(_titles[_selectedIndex]),
-        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.pushNamed(context, '/mypage'); // → My Page로 이동
-            },
+            onPressed: () => Navigator.pushNamed(context, '/mypage'),
           ),
         ],
       ),
@@ -82,128 +88,4 @@ class _MainNavigatorState extends State<MainNavigator> {
       ),
     );
   }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('홈 (명예의 전당)'));
-}
-
-class RankPage extends StatelessWidget {
-  const RankPage({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('랭크 페이지'));
-}
-
-class LibraryPage extends StatelessWidget {
-  const LibraryPage({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('라이브러리 페이지'));
-}
-
-class ConsultingPage extends StatelessWidget {
-  const ConsultingPage({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('컨설팅 페이지'));
-}
-
-// ---------------------------
-// 스캔 → 컬러픽커 연결
-// ---------------------------
-class ScanPage extends StatelessWidget {
-  const ScanPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: ElevatedButton.icon(
-        icon: const Icon(Icons.camera_alt),
-        label: const Text('카메라 찍기'),
-        onPressed: () {
-          Navigator.pushNamed(context, '/colorpicker'); // → Color Picker 이동
-        },
-      ),
-    );
-  }
-}
-
-class ColorPickerPage extends StatelessWidget {
-  const ColorPickerPage({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Color Picker')),
-    body: const Center(child: Text('색상 선택 페이지')),
-  );
-}
-
-// ---------------------------
-// 마이페이지 → 로그인 → 회원가입 연결
-// ---------------------------
-class MyPage extends StatelessWidget {
-  const MyPage({super.key});
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('My Page')),
-    body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text('마이페이지'),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/login'); // → Login
-            },
-            child: const Text('로그인 하러 가기'),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Login')),
-    body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text('로그인 페이지'),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context); // 로그인 완료 후 뒤로가기(홈 복귀)
-            },
-            child: const Text('로그인'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/signup'); // → 회원가입
-            },
-            child: const Text('회원가입'),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-class SignUpPage extends StatelessWidget {
-  const SignUpPage({super.key});
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Sign Up')),
-    body: const Center(child: Text('회원가입 페이지')),
-  );
 }
