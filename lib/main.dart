@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-import 'screens/home_page.dart';
-import 'screens/rank_page.dart';
-import 'screens/scan_page.dart';
-import 'screens/color_picker_page.dart';
-import 'screens/library_page.dart';
-import 'screens/consulting_page.dart';
-import 'screens/login_page.dart';
-import 'screens/signup_page.dart';
-import 'screens/my_page.dart';
-import 'screens/design_page.dart';
+import 'screens/kyh/home_page.dart';
+import 'screens/kyh/rank_page.dart';
+import 'screens/ljh/scan_page.dart';
+import 'screens/ljh/color_picker_page.dart';
+import 'screens/lji/library_page.dart';
+import 'screens/lji/consulting_page.dart';
+import 'screens/csw/login_page.dart';
+import 'screens/csw/signup_page.dart';
+import 'screens/csw/my_page.dart';
+import 'screens/lji/design_page.dart';
 
 void main() => runApp(const MyApp());
 
