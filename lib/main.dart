@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'state/app_state.dart';
 
 import 'screens/kyh/home_page.dart';
 import 'screens/kyh/rank_page.dart';
@@ -11,7 +14,14 @@ import 'screens/csw/signup_page.dart';
 import 'screens/csw/my_page.dart';
 import 'screens/lji/design_page.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => AppState(),       // 전역 상태 등록
+      child: const MyApp(),
+    ),
+  );
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
