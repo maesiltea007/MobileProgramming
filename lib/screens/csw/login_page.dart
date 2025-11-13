@@ -6,20 +6,100 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('🔐 로그인')),
-      body: Center(
+      backgroundColor: const Color(0xFF2B2B2B),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 40,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4),
+          boxShadow: const [
+            BoxShadow(
+              blurRadius: 10,
+              offset: Offset(0, 4),
+              color: Colors.black26,
+            ),
+          ],
+        ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('로그인 페이지', style: TextStyle(fontSize: 22)),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('로그인 완료'),
+            const Text(
+              'FontMaster',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF3B2ECC),
+              ),
+            ),
+            const SizedBox(height: 40),
+
+            TextField(
+              decoration: InputDecoration(
+                hintText: 'id',
+                contentPadding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            TextField(
+              obscureText: true,
+              decoration: InputDecoration(
+                hintText: 'password',
+                contentPadding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            TextButton(
+              onPressed: () {
+                // TODO: 로그인 처리
+                Navigator.pop(context);
+              },
+              child: const Text(
+                'Log in',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF3B2ECC),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 60),
+
+            const Text(
+              "don't have an account?",
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.black54,
+              ),
             ),
             TextButton(
               onPressed: () => Navigator.pushNamed(context, '/signup'),
-              child: const Text('회원가입으로 이동'),
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                minimumSize: const Size(0, 0),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: const Text(
+                'sign up',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.black87,
+                ),
+              ),
             ),
           ],
         ),
