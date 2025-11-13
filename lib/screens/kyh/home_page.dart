@@ -15,7 +15,7 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ✅ 상단 타이틀 + 전역 디자인 적용
+            // 상단 타이틀
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -24,20 +24,20 @@ class HomePage extends StatelessWidget {
                   Text(
                     '🏆 명예의 전당',
                     style: TextStyle(
-                      fontSize: app.fontSize + 4,     // 🔥 전역 폰트 크기 적용
-                      color: app.mainColor,           // 🔥 전역 컬러 적용
+                      fontSize: app.fontSize + 4,
+                      color: app.mainColor,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Icon(Icons.refresh, color: app.mainColor), // 🔥 전역 컬러 반영
+                  Icon(Icons.refresh, color: app.mainColor),
                 ],
               ),
             ),
 
-            // ✅ TOP 3 랭킹 영역
+            // TOP 3 영역
             Container(
               height: 140,
-              color: app.mainColor.withOpacity(0.1),  // 🔥 전역 색감 기반 배경 톤
+              color: app.mainColor.withOpacity(0.1),
               alignment: Alignment.center,
               child: Text(
                 'Top 3 영역',
@@ -51,7 +51,7 @@ class HomePage extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // ✅ 리스트 타이틀
+            // 리스트 타이틀
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
@@ -66,10 +66,10 @@ class HomePage extends StatelessWidget {
 
             const SizedBox(height: 8),
 
-            // ✅ 랭킹 리스트 (전역 디자인 적용)
+            // 🔥 플레이어별 좋아요 표시됨
             Expanded(
               child: ListView.builder(
-                itemCount: 10,
+                itemCount: app.playerLikes.length,
                 itemBuilder: (context, index) {
                   return ListTile(
                     leading: CircleAvatar(
@@ -86,10 +86,13 @@ class HomePage extends StatelessWidget {
                         color: Colors.black,
                       ),
                     ),
+
+                    // 🔥 여기 좋아요 표시 추가됨
                     subtitle: Text(
-                      '활동 포인트: ${1000 - index * 20}점',
+                      '좋아요: ${app.playerLikes[index]}개',
                       style: TextStyle(fontSize: app.fontSize * 0.8),
                     ),
+
                     trailing: Icon(Icons.chevron_right, color: app.mainColor),
                     onTap: () {},
                   );
@@ -97,14 +100,14 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            // ✅ 하단 버튼 (전역 색상 반영)
+            // 하단 버튼
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Center(
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: app.mainColor,      // 🔥 전역 색상
+                    backgroundColor: app.mainColor,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 40,

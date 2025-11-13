@@ -1,25 +1,37 @@
 import 'package:flutter/material.dart';
 
+
 class AppState extends ChangeNotifier {
-  // 디자인 설정 값
   Color mainColor = Colors.blueAccent;
   double fontSize = 20;
-  String fontFamily = 'Roboto';
 
-  // 좋아요 카운트
-  int likeCount = 0;
+  final List<bool> playerLiked = List.generate(10, (_) => false);
+  final List<int> playerLikes = List.generate(10, (_) => 0);
 
-  // 디자인 변경
-  void updateDesign({Color? color, double? size, String? font}) {
-    if (color != null) mainColor = color;
-    if (size != null) fontSize = size;
-    if (font != null) fontFamily = font;
+  // ❤️ 하트 클릭 → 좋아요 토글 (ON/OFF)
+  void toggleLike(int index) {
+    if (playerLiked[index]) {
+      // 좋아요 취소
+      playerLiked[index] = false;
+      playerLikes[index]--;
+    } else {
+      // 좋아요 활성화
+      playerLiked[index] = true;
+      playerLikes[index]++;
+    }
     notifyListeners();
   }
 
-  // 좋아요 기능
-  void toggleLike() {
-    likeCount++;
-    notifyListeners();
+  // ❤️‍🔥 더블탭 → 무조건 좋아요 ON
+  void likeByDoubleTap(int index) {
+    if (!playerLiked[index]) {
+      playerLiked[index] = true;
+      playerLikes[index]++;
+      notifyListeners();
+    }
   }
+
+  int get totalLikes =>
+      playerLikes.fold(0, (sum, n) => sum + n);
 }
+
