@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/design.dart';
 import '../../data/saved_designs.dart';
+import 'design_page.dart';
 
 //디자인카드 위젯
 class DesignCard extends StatelessWidget {
@@ -46,8 +47,22 @@ class LibraryPage extends StatelessWidget {
           childAspectRatio: 1,
         ),
         itemCount: designs.length,   // 저장된 디자인 개수
+
         itemBuilder: (context, index) {
-          return DesignCard(design: designs[index]);
+          final design = designs[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => DesignPage(design: design),
+                  transitionDuration: Duration.zero,
+                  reverseTransitionDuration: Duration.zero,
+                  transitionsBuilder: (_, __, ___, child) => child,
+                ),
+              );
+            },
+            child: DesignCard(design: design),
+          );
         },
       ),
     );
