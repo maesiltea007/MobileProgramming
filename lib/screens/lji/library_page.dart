@@ -1,70 +1,10 @@
 import 'package:flutter/material.dart';
-
-//더미데이터형식
-class SavedDesign {
-  final String text;
-  final String fontFamily;
-  final Color fontColor;
-  final Color backgroundColor;
-
-  const SavedDesign({
-    required this.text,
-    required this.fontFamily,
-    required this.fontColor,
-    required this.backgroundColor,
-  });
-}
-
-//더미데이터셋
-//폰트는 야믈 파일에 다 지정해줘야 함!!
-List<SavedDesign> get _designs => const [
-  SavedDesign(
-    text: 'hello',
-    fontFamily: 'Arial',
-    fontColor: Colors.white,
-    backgroundColor: Color(0xFF5CA9FF),
-  ),
-  SavedDesign(
-    text: 'world',
-    fontFamily: 'Georgia',
-    fontColor: Colors.white,
-    backgroundColor: Color(0xFF2F9928),
-  ),
-  SavedDesign(
-    text: 'Test',
-    fontFamily: 'Courier New',
-    fontColor: Colors.black,
-    backgroundColor: Color(0xFFFFB7E5),
-  ),
-  SavedDesign(
-    text: 'Test',
-    fontFamily: 'Arial',
-    fontColor: Colors.black,
-    backgroundColor: Color(0xFFFFB7E5),
-  ),
-  SavedDesign(
-    text: 'Test',
-    fontFamily: 'Arial',
-    fontColor: Colors.black,
-    backgroundColor: Color(0xFFFFB7E5),
-  ),
-  SavedDesign(
-    text: 'Test',
-    fontFamily: 'Arial',
-    fontColor: Colors.black,
-    backgroundColor: Color(0xFFFFB7E5),
-  ),
-  SavedDesign(
-    text: 'Test',
-    fontFamily: 'Arial',
-    fontColor: Colors.black,
-    backgroundColor: Color(0xFFFFB7E5),
-  ),
-];
+import '../../models/design.dart';
+import '../../data/saved_designs.dart';
 
 //디자인카드 위젯
 class DesignCard extends StatelessWidget {
-  final SavedDesign design;
+  final Design design;
   const DesignCard({super.key, required this.design});
 
   @override
@@ -94,7 +34,7 @@ class LibraryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final designs = _designs; // 더미데이터 가져오기
+    final designs = UserDesigns; // 더미데이터 가져오기
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
