@@ -12,7 +12,7 @@ import 'screens/lji/consulting_page.dart';
 import 'screens/csw/login_page.dart';
 import 'screens/csw/signup_page.dart';
 import 'screens/csw/my_page.dart';
-import 'screens/lji/design_page.dart';
+import 'screens/kyh/design_page.dart';
 
 Future<void> main() async {
   // ★ 플러그인(camera) 사용 전에 반드시 초기화

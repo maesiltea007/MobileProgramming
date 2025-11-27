@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../models/design.dart';
+import '../../services/design_repository.dart';
+import '../../services/ranking_service.dart';
+
+// 디자인 ID 생성 함수
+String generateDesignId() {
+  return DateTime.now().millisecondsSinceEpoch.toString();
+}
 
 class DesignPage extends StatefulWidget {
   final Design design;
@@ -40,6 +47,12 @@ class _DesignPageState extends State<DesignPage> {
       appBar: AppBar(
         title: const Text('Design Page'),
       ),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: _saveDesign,
+        child: const Icon(Icons.save),
+      ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -58,6 +71,27 @@ class _DesignPageState extends State<DesignPage> {
         ),
       ),
     );
+  }
+
+  void _saveDesign() {
+    final id = generateDesignId();
+
+    // 수정된 텍스트 반영
+    final updatedDesign = Design(
+      text: _textController.text,
+      fontFamily: widget.design.fontFamily,
+      fontColor: widget.design.fontColor,
+      backgroundColor: widget.design.backgroundColor,
+    );
+
+    // 1) 디자인 저장
+    DesignRepository.save(id, updatedDesign);
+
+    // 2) 랭킹/좋아요 초기값 Hive에 저장
+    RankingService.initializeDesign(id);
+
+    // 3) 페이지 종료 (필요하면 Snackbar 가능)
+    Navigator.pop(context);
   }
 
 

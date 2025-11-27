@@ -13,4 +13,22 @@ class Design {
     required this.fontColor,
     required this.backgroundColor,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'text': text,
+      'fontFamily': fontFamily,
+      'fontColor': fontColor.value,
+      'backgroundColor': backgroundColor.value,
+    };
+  }
+
+  static Design fromMap(Map<String, dynamic> map) {
+    return Design(
+      text: map['text'],
+      fontFamily: map['fontFamily'],
+      fontColor: Color(map['fontColor']),
+      backgroundColor: Color(map['backgroundColor']),
+    );
+  }
 }
