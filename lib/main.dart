@@ -14,10 +14,13 @@ import 'screens/csw/signup_page.dart';
 import 'screens/csw/my_page.dart';
 import 'screens/lji/design_page.dart';
 
-void main() {
+Future<void> main() async {
+  // ★ 플러그인(camera) 사용 전에 반드시 초기화
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(
     ChangeNotifierProvider(
-      create: (_) => AppState(),       // 전역 상태 등록
+      create: (_) => AppState(), // 전역 상태
       child: const MyApp(),
     ),
   );
@@ -37,7 +40,12 @@ class MyApp extends StatelessWidget {
         '/mypage': (context) => const MyPage(),
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignUpPage(),
-        '/colorpicker': (context) => const ColorPickerPage(),
+        // 🔥 여기 수정!
+        '/colorpicker': (context) {
+          final imagePath =
+          ModalRoute.of(context)!.settings.arguments as String;
+          return ColorPickerPage(imagePath: imagePath);
+        },
       },
     );
   }
