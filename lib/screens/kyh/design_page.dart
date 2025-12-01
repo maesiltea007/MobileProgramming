@@ -93,6 +93,7 @@ class _DesignPageState extends State<DesignPage> {
       fontFamily: widget.design.fontFamily,
       fontColor: widget.design.fontColor,
       backgroundColor: widget.design.backgroundColor,
+      ownerId: app.currentUserId!,
     );
 
     DesignRepository.save(id, updatedDesign);

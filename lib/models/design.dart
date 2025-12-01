@@ -6,29 +6,33 @@ class Design {
   final String fontFamily;
   final Color fontColor;
   final Color backgroundColor;
+  final String ownerId;
 
   const Design({
     required this.text,
     required this.fontFamily,
     required this.fontColor,
     required this.backgroundColor,
+    required this.ownerId,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'text': text,
-      'fontFamily': fontFamily,
-      'fontColor': fontColor.value,
-      'backgroundColor': backgroundColor.value,
-    };
-  }
+  Map<String, dynamic> toMap() =>
+      {
+        "text": text,
+        "fontFamily": fontFamily,
+        "fontColor": fontColor.value,
+        "backgroundColor": backgroundColor.value,
+        "ownerId": ownerId,
+      };
 
-  static Design fromMap(Map<String, dynamic> map) {
+  factory Design.fromMap(Map<String, dynamic> map) {
     return Design(
-      text: map['text'],
-      fontFamily: map['fontFamily'],
-      fontColor: Color(map['fontColor']),
-      backgroundColor: Color(map['backgroundColor']),
+      text: map["text"],
+      fontFamily: map["fontFamily"],
+      fontColor: Color(map["fontColor"]),
+      backgroundColor: Color(map["backgroundColor"]),
+      ownerId: map["ownerId"],
     );
   }
 }
+

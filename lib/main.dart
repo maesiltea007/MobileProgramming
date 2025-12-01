@@ -14,6 +14,7 @@ import 'screens/csw/login_page.dart';
 import 'screens/csw/signup_page.dart';
 import 'screens/csw/my_page.dart';
 import 'screens/kyh/design_page.dart';
+import 'data/dummy_data.dart';
 
 const bool DEV_AUTO_LOGIN = true; // 임시로그인
 
@@ -26,6 +27,9 @@ Future<void> main() async {
   await Hive.openBox('designsbox');
   await Hive.openBox('rankingbox');
   await Hive.openBox('likesbox');
+
+  // 더미 데이터 삽입 (개발 모드에서만 실행)
+  insertDummyData();
 
   runApp(
     ChangeNotifierProvider(
