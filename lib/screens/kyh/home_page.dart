@@ -2,12 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../state/app_state.dart';
 
+import '../../services/ranking_service.dart';
+import '../../services/design_repository.dart';
+import '../../models/design.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final app = Provider.of<AppState>(context);
+
+    // 🔥 Hive에서 상위 10위 가져오기
+    final top10 = RankingService.getTop10();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -34,7 +41,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            // TOP 3 영역
+            // TOP 3 영역 (디자인 반영 가능)
             Container(
               height: 140,
               color: app.mainColor.withOpacity(0.1),
@@ -66,30 +73,43 @@ class HomePage extends StatelessWidget {
 
             const SizedBox(height: 8),
 
-            // 🔥 플레이어별 좋아요 표시됨
+            // 🔥 Hive 데이터 기반 리스트
             Expanded(
               child: ListView.builder(
-                itemCount: app.playerLikes.length,
+                itemCount: top10.length,
                 itemBuilder: (context, index) {
+                  final entry = top10[index]; // MapEntry<String, int>
+                  final designId = entry.key;
+                  final score = entry.value;
+
+                  final design = DesignRepository.get(designId);
+
+                  if (design == null) {
+                    return ListTile(
+                      title: Text("삭제된 디자인 ($designId)"),
+                      subtitle: Text("점수: $score"),
+                    );
+                  }
+
                   return ListTile(
                     leading: CircleAvatar(
                       backgroundColor: app.mainColor.withOpacity(0.8),
                       child: Text(
-                        '${index + 1}',
+                        '${index + 1}', // 순위
                         style: const TextStyle(color: Colors.white),
                       ),
                     ),
+
                     title: Text(
-                      '사용자 ${index + 1}',
+                      design.text,
                       style: TextStyle(
                         fontSize: app.fontSize,
                         color: Colors.black,
                       ),
                     ),
 
-                    // 🔥 여기 좋아요 표시 추가됨
                     subtitle: Text(
-                      '좋아요: ${app.playerLikes[index]}개',
+                      '점수: $score',
                       style: TextStyle(fontSize: app.fontSize * 0.8),
                     ),
 

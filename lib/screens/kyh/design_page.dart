@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../../models/design.dart';
 import '../../services/design_repository.dart';
 import '../../services/ranking_service.dart';
+import 'package:provider/provider.dart';
+import '../../state/app_state.dart';
+
 
 // 디자인 ID 생성 함수
 String generateDesignId() {
@@ -74,9 +77,17 @@ class _DesignPageState extends State<DesignPage> {
   }
 
   void _saveDesign() {
+    // 0) 로그인 체크
+    final app = Provider.of<AppState>(context, listen: false);
+
+    if (!app.isLoggedIn) {
+      _showLoginRequiredDialog();
+      return;
+    }
+
+    // 로그인된 상태라면 저장 로직 진행
     final id = generateDesignId();
 
-    // 수정된 텍스트 반영
     final updatedDesign = Design(
       text: _textController.text,
       fontFamily: widget.design.fontFamily,
@@ -84,14 +95,35 @@ class _DesignPageState extends State<DesignPage> {
       backgroundColor: widget.design.backgroundColor,
     );
 
-    // 1) 디자인 저장
     DesignRepository.save(id, updatedDesign);
-
-    // 2) 랭킹/좋아요 초기값 Hive에 저장
     RankingService.initializeDesign(id);
 
-    // 3) 페이지 종료 (필요하면 Snackbar 가능)
     Navigator.pop(context);
+  }
+
+  void _showLoginRequiredDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("로그인이 필요합니다"),
+          content: const Text("디자인을 저장하려면 로그인해주세요."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("취소"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // 먼저 팝업 닫고
+                Navigator.pushNamed(context, '/login'); // 로그인 페이지로 이동
+              },
+              child: const Text("로그인하기"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
 

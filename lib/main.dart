@@ -15,6 +15,8 @@ import 'screens/csw/signup_page.dart';
 import 'screens/csw/my_page.dart';
 import 'screens/kyh/design_page.dart';
 
+const bool DEV_AUTO_LOGIN = true; // 임시로그인
+
 Future<void> main() async {
   // ★ 플러그인(camera) 사용 전에 반드시 초기화
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +29,15 @@ Future<void> main() async {
 
   runApp(
     ChangeNotifierProvider(
-      create: (_) => AppState(), // 전역 상태
+      create: (_) {
+        final appState = AppState();
+
+        if (DEV_AUTO_LOGIN) {
+          appState.devLogin(); // 🔥 개발 중 자동 로그인
+        }
+
+        return appState;
+      },
       child: const MyApp(),
     ),
   );

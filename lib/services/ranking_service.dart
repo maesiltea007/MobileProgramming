@@ -30,6 +30,10 @@ class RankingService {
     rankingBox.put(designId, current + delta);
   }
 
+  static int getScore(String designId) {
+    return rankingBox.get(designId, defaultValue: 0) as int;
+  }
+
   static List<MapEntry<String, int>> getRanking() {
     final raw = rankingBox.toMap();
 
