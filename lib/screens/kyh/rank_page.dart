@@ -1,84 +1,123 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../state/app_state.dart';
+import '../../services/design_repository.dart';
+import '../../services/ranking_service.dart';
+import '../../models/design.dart';
+import '../../models/rank_item.dart';
 
-class RankPage extends StatelessWidget {
+
+class RankPage extends StatefulWidget {
   const RankPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final app = Provider.of<AppState>(context);
+  State<RankPage> createState() => _RankPageState();
+}
 
+class _RankPageState extends State<RankPage> {
+  late Future<List<RankItem>> _rankFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _rankFuture = _loadRanking();
+  }
+
+  Future<List<RankItem>> _loadRanking() async {
+    final ranking = RankingService.getRanking(); // designId + score
+    List<RankItem> items = [];
+
+    for (final entry in ranking) {
+      final designId = entry.key;
+      final score = entry.value;
+
+      final design = DesignRepository.get(designId);
+      if (design != null) {
+        items.add(
+          RankItem(
+            id: designId,
+            design: design,
+            score: score,
+            isLiked: RankingService.isLiked(designId),
+          ),
+        );
+      }
+    }
+
+    return items;
+  }
+
+  void _toggleLike(String designId) {
+    RankingService.toggleLike(designId);
+    setState(() {
+      _rankFuture = _loadRanking(); // UI 갱신
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          const SizedBox(height: 20),
+      appBar: AppBar(title: const Text("📊 이번 주 랭킹")),
 
-          Text(
-            '📊 이번 주 랭킹',
-            style: TextStyle(
-              fontSize: app.fontSize + 2,
-              fontWeight: FontWeight.bold,
-              color: app.mainColor,
-            ),
-          ),
+      body: FutureBuilder(
+        future: _rankFuture,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-          const SizedBox(height: 20),
+          final list = snapshot.data as List<RankItem>;
 
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: app.playerLikes.length,
-              itemBuilder: (context, index) {
-                final liked = app.playerLiked[index];
+          if (list.isEmpty) {
+            return const Center(child: Text("아직 저장된 디자인이 없습니다."));
+          }
 
-                return GestureDetector(
-                  onDoubleTap: () {
-                    app.likeByDoubleTap(index);
-                  },
-                  child: Card(
-                    elevation: 2,
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: app.mainColor.withOpacity(0.9),
-                        child: Text(
-                          '${index + 1}',
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      ),
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: list.length,
+            itemBuilder: (_, index) {
+              final item = list[index];
+              final d = item.design;
 
-                      title: Text(
-                        '사용자 ${index + 1}',
-                        style: TextStyle(
-                          fontSize: app.fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-
-                      subtitle: Text(
-                        '좋아요: ${app.playerLikes[index]}개',
-                        style: TextStyle(fontSize: app.fontSize * 0.8),
-                      ),
-
-                      trailing: IconButton(
-                        icon: Icon(
-                          Icons.favorite,
-                          color: liked ? Colors.red : Colors.grey,
-                        ),
-                        onPressed: () {
-                          app.toggleLike(index);
-                        },
+              return GestureDetector(
+                onDoubleTap: () => _toggleLike(item.id),
+                child: Card(
+                  elevation: 2,
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.black87,
+                      child: Text(
+                        "${index + 1}",
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
+
+                    title: Text(
+                      d.text,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+
+                    subtitle: Text(
+                      "좋아요: ${item.score}",
+                      style: const TextStyle(fontSize: 14),
+                    ),
+
+                    trailing: IconButton(
+                      icon: Icon(
+                        Icons.favorite,
+                        color: item.isLiked ? Colors.red : Colors.grey,
+                      ),
+                      onPressed: () => _toggleLike(item.id),
+                    ),
                   ),
-                );
-              },
-            ),
-          ),
-        ],
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
 }
+
+

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'state/app_state.dart';
 
@@ -17,6 +18,12 @@ import 'screens/kyh/design_page.dart';
 Future<void> main() async {
   // ★ 플러그인(camera) 사용 전에 반드시 초기화
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+
+  await Hive.openBox('designsbox');
+  await Hive.openBox('rankingbox');
+  await Hive.openBox('likesbox');
 
   runApp(
     ChangeNotifierProvider(

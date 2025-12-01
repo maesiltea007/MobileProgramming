@@ -2,7 +2,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../models/design.dart';
 
 class DesignRepository {
-  static final _box = Hive.box('designsBox');
+  static final _box = Hive.box('designsbox');
 
   static void save(String id, Design design) {
     _box.put(id, design.toMap());

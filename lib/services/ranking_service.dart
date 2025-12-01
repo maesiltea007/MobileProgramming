@@ -1,8 +1,8 @@
 import 'package:hive_flutter/hive_flutter.dart';
 
 class RankingService {
-  static final rankingBox = Hive.box('rankingBox');
-  static final likesBox = Hive.box('likesBox');
+  static final rankingBox = Hive.box('rankingbox');
+  static final likesBox = Hive.box('likesbox');
 
   static void initializeDesign(String designId) {
     if (!rankingBox.containsKey(designId)) {
