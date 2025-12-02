@@ -2,9 +2,10 @@ import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class ScanPage extends StatefulWidget {
-  final VoidCallback? onBackToHome; // 🔹 추가
+  final VoidCallback? onBackToHome;
   const ScanPage({
     super.key,
     this.onBackToHome,
@@ -24,12 +25,45 @@ class _ScanPageState extends State<ScanPage> {
   Color _selectedColor = Colors.grey;
   String _hexCode = '# FFFFFF';
 
-  int? _prevR, _prevG, _prevB; // 🔹 이전 RGB (±2 이하면 업데이트 안 함)
+  int? _prevR, _prevG, _prevB;
+  bool _isProcessing = false;
+  DateTime? _lastProcessed;
 
   @override
   void initState() {
     super.initState();
     _initCamera();
+  }
+
+  // 🔹 로그인 안 되어 있을 때 띄울 다이얼로그
+  void _showLoginRequiredDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("로그인이 필요합니다"),
+          content: const Text("디자인을 저장하려면 로그인해주세요."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("취소"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/login');
+              },
+              child: const Text("로그인하기"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // 🔹 나중에 로그인 시스템 연결하면 여기만 바꾸면 됨
+  String? _getCurrentUserId() {
+    return 'dummy-user-1'; // TODO: 실제 로그인 정보로 교체
   }
 
   Future<void> _initCamera() async {
@@ -53,45 +87,69 @@ class _ScanPageState extends State<ScanPage> {
         orElse: () => cameras.first,
       );
 
-      final controller = CameraController(
+      _controller = CameraController(
         backCamera,
         ResolutionPreset.medium,
         enableAudio: false,
         imageFormatGroup: ImageFormatGroup.yuv420,
       );
 
-      _initFuture = controller.initialize();
+      _initFuture = _controller!.initialize();
       await _initFuture;
 
-      bool _isProcessing = false;
-      DateTime? _lastProcessed;
+      // 🔥 스트림 시작
+      await _startImageStream();
 
-      /// initState 밑쪽에 위 두 변수를 필드로 추가해두고,
-
-      await controller.startImageStream((image) async {
-        if (_isProcessing) return; // 이미 처리 중이면 스킵
-
-        final now = DateTime.now();
-        if (_lastProcessed != null &&
-            now.difference(_lastProcessed!) < const Duration(milliseconds: 80)) {
-          // 80ms 이내(대략 10~12fps)는 스킵해서 부하 줄이기
-          return;
-        }
-
-        _isProcessing = true;
-        _lastImage = image;
-        _updateColorFromImage();
-        _lastProcessed = now;
-        _isProcessing = false;
-      });
-
-
-      setState(() {
-        _controller = controller;
-      });
+      setState(() {});
     } catch (e) {
       setState(() => _error = '카메라 초기화 실패: $e');
     }
+  }
+
+  Future<void> _startImageStream() async {
+    if (_controller == null) return;
+    if (_controller!.value.isStreamingImages) return;
+
+    await _controller!.startImageStream((image) async {
+      if (_isProcessing) return;
+
+      final now = DateTime.now();
+      if (_lastProcessed != null &&
+          now.difference(_lastProcessed!) <
+              const Duration(milliseconds: 80)) {
+        return;
+      }
+
+      _isProcessing = true;
+      _lastImage = image;
+      _updateColorFromImage();
+      _lastProcessed = now;
+      _isProcessing = false;
+    });
+  }
+
+  Future<void> _saveColorToHive(String userId) async {
+    final designsBox = Hive.box('designsbox');
+    final rankingBox = Hive.box('rankingbox');
+    final likesBox = Hive.box('likesbox');
+
+    final String designId = 'd_${DateTime.now().millisecondsSinceEpoch}';
+
+    final design = {
+      "text": "Picked Color",
+      "fontFamily": "Arial",
+      "fontColor": Colors.black.value,
+      "backgroundColor": _selectedColor.value,
+      "ownerId": userId,
+    };
+
+    designsBox.put(designId, design);
+    rankingBox.put(designId, 0);
+    likesBox.put(designId, false);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("컬러가 저장되었습니다.")),
+    );
   }
 
   @override
@@ -116,11 +174,10 @@ class _ScanPageState extends State<ScanPage> {
     final imgW = image.width;
     final imgH = image.height;
 
-    // 십자가 중심을 프레임 중앙으로 가정
     final centerX = (imgW / 2).round();
     final centerY = (imgH / 2).round();
 
-    const int radius = 3; // 7x7
+    const int radius = 3;
 
     int sumR = 0, sumG = 0, sumB = 0, count = 0;
 
@@ -137,11 +194,9 @@ class _ScanPageState extends State<ScanPage> {
         final x = (centerX + dx).clamp(0, imgW - 1);
         final y = (centerY + dy).clamp(0, imgH - 1);
 
-        // Y
         final yIndex = y * yRowStride + x;
         final int Y = yPlane.bytes[yIndex];
 
-        // U, V (2x2 블럭)
         final uvX = x ~/ 2;
         final uvY = y ~/ 2;
         final uvIndex = uvY * uvRowStride + uvX * uvPixelStride;
@@ -173,7 +228,6 @@ class _ScanPageState extends State<ScanPage> {
     int g = (sumG / count).round().clamp(0, 255);
     int b = (sumB / count).round().clamp(0, 255);
 
-    // 🔹 변화가 거의 없으면(±2 이내) 업데이트 안 함
     if (_prevR != null &&
         (r - _prevR!).abs() <= 2 &&
         (g - _prevG!).abs() <= 2 &&
@@ -223,19 +277,16 @@ class _ScanPageState extends State<ScanPage> {
           color: Colors.white,
           child: Column(
             children: [
-              // ── 카메라 프리뷰(위쪽 전체 꽉 채우기) + 십자가
+              // ── 카메라 프리뷰 + 십자가
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Stack(
-                      fit: StackFit.expand, // <- 중요: 영역 전체를 프리뷰가 꽉 채우도록
+                      fit: StackFit.expand,
                       children: [
-                        // 카메라 프리뷰 전체 채움
                         CameraPreview(_controller!),
-
-                        // 십자가 중앙 배치
                         Center(
                           child: SizedBox(
                             width: 80,
@@ -243,8 +294,14 @@ class _ScanPageState extends State<ScanPage> {
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
-                                Container(width: 2, height: 160, color: Colors.white),
-                                Container(width: 80, height: 2, color: Colors.white),
+                                Container(
+                                    width: 2,
+                                    height: 160,
+                                    color: Colors.white),
+                                Container(
+                                    width: 80,
+                                    height: 2,
+                                    color: Colors.white),
                               ],
                             ),
                           ),
@@ -254,8 +311,6 @@ class _ScanPageState extends State<ScanPage> {
                   ),
                 ),
               ),
-
-
 
               const SizedBox(height: 8),
 
@@ -298,15 +353,25 @@ class _ScanPageState extends State<ScanPage> {
                     SizedBox(
                       height: 32,
                       child: ElevatedButton(
-                        onPressed: () {
-                          // TODO: 색 저장 로직
+                        onPressed: () async {
+                          final userId = _getCurrentUserId();
+
+                          if (userId == null) {
+                            _showLoginRequiredDialog();
+                            return;
+                          }
+
+                          await _saveColorToHive(userId);
+
+                          if (!mounted) return;
+                          Navigator.pushNamed(context, '/library');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: Colors.black87,
                           elevation: 1,
-                          padding:
-                          const EdgeInsets.symmetric(horizontal: 14),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14),
                         ),
                         child: const Text('Save'),
                       ),
@@ -317,7 +382,7 @@ class _ScanPageState extends State<ScanPage> {
 
               const SizedBox(height: 16),
 
-              // ── camera 버튼만
+              // ── camera 버튼
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
@@ -328,19 +393,23 @@ class _ScanPageState extends State<ScanPage> {
                   children: [
                     GestureDetector(
                       onTap: () async {
-                        if (_controller == null || !_controller!.value.isInitialized) return;
+                        if (_controller == null ||
+                            !_controller!.value.isInitialized) return;
                         try {
                           if (_controller!.value.isStreamingImages) {
                             await _controller!.stopImageStream();
                           }
-                          final file = await _controller!.takePicture();
+                          final file =
+                          await _controller!.takePicture();
 
                           if (!mounted) return;
-                          Navigator.pushNamed(
+                          await Navigator.pushNamed(
                             context,
                             '/colorpicker',
                             arguments: file.path,
                           );
+
+                          await _startImageStream();
                         } catch (e) {
                           debugPrint('takePicture error: $e');
                         }
@@ -350,7 +419,7 @@ class _ScanPageState extends State<ScanPage> {
                         height: 90,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.grey[300],            // 🔹 회색 원
+                          color: Colors.grey[300],
                           boxShadow: [
                             BoxShadow(
                               blurRadius: 6,
@@ -361,18 +430,16 @@ class _ScanPageState extends State<ScanPage> {
                         ),
                         child: const Center(
                           child: Icon(
-                            Icons.camera_alt,                 // 🔹 카메라 아이콘
+                            Icons.camera_alt,
                             size: 36,
                             color: Colors.black87,
                           ),
                         ),
                       ),
                     ),
-
                   ],
                 ),
               ),
-
             ],
           ),
         );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import '../../models/design.dart';
 import '../../data/saved_designs.dart';
 import '../kyh/design_page.dart';
@@ -35,7 +36,31 @@ class LibraryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final designs = UserDesigns; // 더미데이터 가져오기
+    final designsBox = Hive.box('designsbox');
+
+    // 1) Hive에 있는 디자인들 전부 꺼내서 Design 리스트로 변환
+    final List<Design> hiveDesigns = designsBox.keys.map<Design>((key) {
+      final raw = designsBox.get(key);
+
+      if (raw is Map) {
+        // Map<dynamic, dynamic> → Map<String, dynamic> 캐스팅
+        final map = Map<String, dynamic>.from(raw as Map);
+        return Design.fromMap(map);
+      }
+
+      // 혹시 데이터가 이상하면 기본값 하나
+      return const Design(
+        text: '',
+        fontFamily: 'Arial',
+        fontColor: Colors.black,
+        backgroundColor: Colors.white,
+        ownerId: '',
+      );
+    }).toList();
+
+    // 2) Hive에 아무것도 없으면 → 기존 더미데이터 사용
+    final List<Design> designs =
+    hiveDesigns.isNotEmpty ? hiveDesigns : UserDesigns;
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -46,8 +71,7 @@ class LibraryPage extends StatelessWidget {
           crossAxisSpacing: 8,
           childAspectRatio: 1,
         ),
-        itemCount: designs.length,   // 저장된 디자인 개수
-
+        itemCount: designs.length,
         itemBuilder: (context, index) {
           final design = designs[index];
           return GestureDetector(
@@ -68,3 +92,4 @@ class LibraryPage extends StatelessWidget {
     );
   }
 }
+
