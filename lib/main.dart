@@ -15,12 +15,18 @@ import 'screens/csw/signup_page.dart';
 import 'screens/csw/my_page.dart';
 import 'screens/kyh/design_page.dart';
 import 'data/dummy_data.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 const bool DEV_AUTO_LOGIN = true; // 임시로그인
 
 Future<void> main() async {
   // ★ 플러그인(camera) 사용 전에 반드시 초기화
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   await Hive.initFlutter();
 
@@ -35,6 +41,8 @@ Future<void> main() async {
     ChangeNotifierProvider(
       create: (_) {
         final appState = AppState();
+
+        appState.initializeAuth();
 
         if (DEV_AUTO_LOGIN) {
           appState.devLogin(); // 🔥 개발 중 자동 로그인
