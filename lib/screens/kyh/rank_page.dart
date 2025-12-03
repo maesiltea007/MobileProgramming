@@ -87,13 +87,26 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
     final myId = Provider
         .of<AppState>(context, listen: false)
         .currentUserId;
-    // 너가 저장해둔 ownerId 사용
 
-    // 내가 올린 것만 필터링
-    final mine = all.where((item) => item.design.ownerId == myId).toList();
+    final mine = <RankItem>[];
+
+    for (final item in all) {
+      if (item.design.ownerId == myId) {
+        mine.add(
+          RankItem(
+            id: item.id,
+            design: item.design,
+            score: item.score,
+            isLiked: item.isLiked,
+            rank: RankingService.getOverallRank(item.id), // 🔥 전체 기준 등수
+          ),
+        );
+      }
+    }
 
     return mine;
   }
+
 
   void _toggleLike(String designId) {
     RankingService.toggleLike(designId);
@@ -164,7 +177,7 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
               final d = item.design;
 
               // 전체 랭킹일 때만 등수 표시
-              final rankLabel = (tab == 0) ? "${index + 1}" : null;
+              final rankLabel = (tab == 1) ? "${item.rank}" : null;
 
               return GestureDetector(
                 onDoubleTap: () => _toggleLike(item.id),
