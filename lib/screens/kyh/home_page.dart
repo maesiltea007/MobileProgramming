@@ -4,17 +4,39 @@ import '../../state/app_state.dart';
 
 import '../../services/ranking_service.dart';
 import '../../services/design_repository.dart';
-import '../../models/design.dart';
+import 'design_preview_box.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
+  Color rankColor(int r) {
+    if (r == 1) return const Color(0xffFFD700); // 금
+    if (r == 2) return const Color(0xffC0C0C0); // 은
+    if (r == 3) return const Color(0xffCD7F32); // 동
+    return Colors.blueAccent; // 4~10등 기본 색
+  }
+
+  String trophyImage(int rank) {
+    switch (rank) {
+      case 1:
+        return 'assets/rank/img2.png';
+      case 2:
+        return 'assets/rank/img3.png';
+      case 3:
+        return 'assets/rank/img4.png';
+      default:
+        return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final app = Provider.of<AppState>(context);
+    final top10 = RankingService.getTop10(); // key=id, value=score
 
-    // 🔥 Hive에서 상위 10위 가져오기
-    final top10 = RankingService.getTop10();
+    // 🔥 1~3등 / 4~10등 분리
+    final top3 = top10.take(3).toList();
+    final rest = top10.length > 3 ? top10.sublist(3) : [];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -22,125 +44,240 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
             // 상단 타이틀
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // 왼쪽 월계수 아이콘
+                  Image.asset(
+                    'assets/rank/img1.png',
+                    width: 26,
+                    height: 26,
+                    color: Colors.black, // 금색으로 통일
+                  ),
+                  const SizedBox(width: 8),
+
+                  // 텍스트
                   Text(
-                    '🏆 명예의 전당',
+                    '명예의 전당',
                     style: TextStyle(
                       fontSize: app.fontSize + 4,
-                      color: app.mainColor,
                       fontWeight: FontWeight.bold,
+                      color: Colors.black, // 금색 텍스트
+                      shadows: const [
+                        Shadow(
+                          color: Colors.black54,
+                          blurRadius: 4,
+                          offset: Offset(1, 2),
+                        )
+                      ],
                     ),
                   ),
-                  Icon(Icons.refresh, color: app.mainColor),
                 ],
               ),
             ),
 
-            // TOP 3 영역 (디자인 반영 가능)
-            Container(
-              height: 140,
-              color: app.mainColor.withOpacity(0.1),
-              alignment: Alignment.center,
-              child: Text(
-                'Top 3 영역',
-                style: TextStyle(
-                  fontSize: app.fontSize,
-                  color: app.mainColor,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
 
-            const SizedBox(height: 16),
-
-            // 리스트 타이틀
+            // -------------------------
+            // 🔥 1~3등 상단 고정 박스 (명예의 전당 스타일로 변경)
+            // -------------------------
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                '이번 주 명예의 전당',
-                style: TextStyle(
-                  fontSize: app.fontSize,
-                  fontWeight: FontWeight.bold,
-                  color: app.mainColor,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFECECEC), // 밝은 회색
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: const Color(0xFFDDDDDD),
+                    width: 2,
+                  ),
+                ),
+
+                child: Column(
+                  children: List.generate(top3.length, (i) {
+                    final entry = top3[i];
+                    final design = DesignRepository.get(entry.key);
+                    final rank = i + 1;
+                    final color = rankColor(rank);
+
+                    if (design == null) return const SizedBox.shrink();
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+
+                        // 🔥 등수(좌) + 좋아요(우)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                // ⭐ 기존 Icon(Icons.emoji_events) 삭제하고 이미지로 교체
+                                Image.asset(
+                                  trophyImage(rank),
+                                  width: 32,
+                                  height: 32,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  "$rank위",
+                                  style: TextStyle(
+                                    fontSize: app.fontSize + 3,
+                                    fontWeight: FontWeight.bold,
+                                    color: color,
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            // 🔥 오른쪽 좋아요 수
+                            Row(
+                              children: [
+                                const Icon(Icons.favorite, color: Colors.red,
+                                    size: 20),
+                                const SizedBox(width: 4),
+                                Text(
+                                  "${RankingService.getScore(entry.key)}",
+                                  style: TextStyle(
+                                    fontSize: app.fontSize,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black, // ← 검정색으로 변경
+                                  ),
+                                ),
+
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // 🔥 미리보기 카드
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: color.withOpacity(0.8),
+                              width: 1.2,
+                            ),
+                          ),
+                          child: DesignPreviewBox(design: design),
+                        ),
+
+                        if (i != top3.length - 1)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            child: Divider(
+                              color: Colors.white.withOpacity(0.3),
+                              thickness: 1,
+                            ),
+                          ),
+                      ],
+                    );
+                  }),
                 ),
               ),
             ),
 
-            const SizedBox(height: 8),
 
-            // 🔥 Hive 데이터 기반 리스트
+            const SizedBox(height: 12),
+
+            // -------------------------
+            // 🔥 4~10등 스크롤 영역
+            // -------------------------
             Expanded(
               child: ListView.builder(
-                itemCount: top10.length,
-                itemBuilder: (context, index) {
-                  final entry = top10[index]; // MapEntry<String, int>
-                  final designId = entry.key;
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: rest.length,
+                itemBuilder: (_, index) {
+                  final entry = rest[index];
+                  final design = DesignRepository.get(entry.key);
                   final score = entry.value;
+                  final rank = index + 4; // 4위부터 시작
+                  final color = rankColor(rank);
 
-                  final design = DesignRepository.get(designId);
+                  if (design == null) return const SizedBox.shrink();
 
-                  if (design == null) {
-                    return ListTile(
-                      title: Text("삭제된 디자인 ($designId)"),
-                      subtitle: Text("점수: $score"),
-                    );
-                  }
-
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: app.mainColor.withOpacity(0.8),
-                      child: Text(
-                        '${index + 1}', // 순위
-                        style: const TextStyle(color: Colors.white),
+                  return Card(
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(
+                        width: 2,
+                        color: color,
                       ),
                     ),
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
 
-                    title: Text(
-                      design.text,
-                      style: TextStyle(
-                        fontSize: app.fontSize,
-                        color: Colors.black,
+                          // 디자인 미리보기
+                          DesignPreviewBox(design: design),
+
+                          const SizedBox(height: 12),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.emoji_events,
+                                      color: color, size: 22),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    "#$rank",
+                                    style: TextStyle(
+                                      fontSize: app.fontSize,
+                                      fontWeight: FontWeight.bold,
+                                      color: color,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.favorite,
+                                    color: const Color(0xFFE53935),
+                                    // 좀 더 입체감 있는 진한 레드
+                                    size: 22,
+                                    shadows: const [
+                                      Shadow(
+                                        color: Colors.black38,
+                                        blurRadius: 4,
+                                        offset: Offset(1, 1),
+                                      )
+                                    ],
+                                  ),
+
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    "${RankingService.getScore(entry.key)}",
+                                    style: TextStyle(
+                                      fontSize: app.fontSize,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-
-                    subtitle: Text(
-                      '점수: $score',
-                      style: TextStyle(fontSize: app.fontSize * 0.8),
-                    ),
-
-                    trailing: Icon(Icons.chevron_right, color: app.mainColor),
-                    onTap: () {},
                   );
                 },
               ),
             ),
 
-            // 하단 버튼
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: app.mainColor,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 12,
-                    ),
-                  ),
-                  child: Text(
-                    '전체 보기',
-                    style: TextStyle(fontSize: app.fontSize),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),

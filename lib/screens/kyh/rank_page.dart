@@ -126,35 +126,37 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
       backgroundColor: Colors.white,
 
       appBar: AppBar(
-        title: const Text("📊 디자인 랭킹"),
-        centerTitle: true,
+        automaticallyImplyLeading: false,
+        elevation: 0,
+        backgroundColor: Colors.white,
+        title: const SizedBox.shrink(),
+        // 제목 제거
+
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: TabBar(
-              controller: _tabController,
-              isScrollable: true,
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.grey,
-              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-              unselectedLabelStyle: const TextStyle(
-                  fontWeight: FontWeight.w400),
+          child: TabBar(
+            controller: _tabController,
+            labelColor: Colors.black,
+            unselectedLabelColor: Colors.grey,
+            labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400),
 
-              indicator: const UnderlineTabIndicator(
-                borderSide: BorderSide(width: 2.5, color: Colors.black),
-                insets: EdgeInsets.symmetric(horizontal: 30), // ← 선을 짧게 만드는 포인트
-              ),
+            // 🔥 두 탭을 좌우로 꽉 채우는 핵심 옵션
+            indicatorSize: TabBarIndicatorSize.tab,
 
-              tabs: const [
-                Tab(text: "전체 랭킹"),
-                Tab(text: "내 디자인"),
-              ],
+            indicator: const UnderlineTabIndicator(
+              borderSide: BorderSide(width: 2.5, color: Colors.black),
             ),
+
+            tabs: const [
+              Tab(text: "전체 랭킹"),
+              Tab(text: "내 디자인"),
+            ],
           ),
         ),
 
       ),
+
 
       body: FutureBuilder(
         future: _rankFuture,
@@ -181,30 +183,60 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
 
               return GestureDetector(
                 onDoubleTap: () => _toggleLike(item.id),
+
                 child: Card(
                   elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(
+                      color: (tab == 1 && item.rank != null && item.rank! <= 10)
+                          ? Colors.blueAccent
+                          : Colors.transparent,
+                      width: (tab == 1 && item.rank != null && item.rank! <= 10)
+                          ? 2
+                          : 0,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+
                   margin: const EdgeInsets.symmetric(vertical: 10),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        DesignPreviewBox(design: d), // 🔥 미리보기 박스 추가
+                        DesignPreviewBox(design: d),
 
                         const SizedBox(height: 12),
 
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            if (rankLabel != null)
-                              Text(
-                                "#$rankLabel",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
+
+                            // 🔥 내 디자인 탭일 때만 등수 출력
+                            if (tab == 1)
+                              Row(
+                                children: [
+                                  // 1~3등 트로피
+                                  if (item.rank != null && item.rank! <= 10)
+                                    Icon(
+                                      Icons.emoji_events,
+                                      color: rankColor(item.rank!),
+                                      size: 22,
+                                    ),
+
+                                  // #등수 표시
+                                  Text(
+                                    "#${item.rank}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: rankColor(item.rank ?? 0),
+                                    ),
+                                  ),
+                                ],
                               ),
 
+                            // 좋아요 버튼
                             Row(
                               children: [
                                 IconButton(
@@ -223,7 +255,6 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
                       ],
                     ),
                   ),
-
                 ),
               );
             },
@@ -232,4 +263,11 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
       ),
     );
   }
+}
+
+Color rankColor(int r) {
+  if (r == 1) return const Color(0xffFFD700); // 금
+  if (r == 2) return const Color(0xffC0C0C0); // 은
+  if (r == 3) return const Color(0xffCD7F32); // 동
+  return Colors.black; // 기본 텍스트 색
 }
