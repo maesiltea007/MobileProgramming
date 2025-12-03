@@ -47,33 +47,35 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
   Future<List<RankItem>> _loadRanking() async {
     final box = DesignRepository.box;
 
-    // 1) values는 Hive의 "삽입 순서"가 그대로 유지됨
-    final values = box.values.toList();
+    // 1) 전체 디자인 로드 (map → Design + id 함께 저장)
+    final List<MapEntry<String, Design>> designs = [];
 
-    // 2) 최신순 정렬 (최근 저장된 디자인이 위)
-    final reversedValues = values.reversed.toList();
+    for (var key in box.keys) {
+      final raw = box.get(key);
 
-    List<RankItem> items = [];
+      if (raw is Map) {
+        final map = Map<String, dynamic>.from(raw);
+        final design = Design.fromMap(map);
 
-    for (int i = 0; i < reversedValues.length; i++) {
-      final map = Map<String, dynamic>.from(reversedValues[i]);
-
-      final design = Design.fromMap(map);
-
-      // keyAt(i)도 reversed 적용된 index 기준으로 가져와야 함
-      final id = box.keyAt(values.length - 1 - i).toString();
-
-      items.add(
-        RankItem(
-          id: id,
-          design: design,
-          score: RankingService.getScore(id),
-          isLiked: RankingService.isLiked(id),
-        ),
-      );
+        designs.add(MapEntry(key.toString(), design));
+      }
     }
 
-    return items;
+    // 2) 최신(createdAt) 순으로 정렬
+    designs.sort((a, b) => b.value.createdAt.compareTo(a.value.createdAt));
+
+    // 3) RankItem 리스트로 변환
+    return designs.map((entry) {
+      final id = entry.key;
+      final d = entry.value;
+
+      return RankItem(
+        id: id,
+        design: d,
+        score: RankingService.getScore(id),
+        isLiked: RankingService.isLiked(id),
+      );
+    }).toList();
   }
 
 
