@@ -2,11 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../services/design_repository.dart';
 import '../../services/ranking_service.dart';
-import '../../models/design.dart';
 import '../../models/rank_item.dart';
 import '../../state/app_state.dart';
 import 'package:provider/provider.dart';
 import 'design_preview_box.dart';
+import '../../models/design.dart';
+
 
 class RankPage extends StatefulWidget {
   const RankPage({super.key});
@@ -15,43 +16,66 @@ class RankPage extends StatefulWidget {
   State<RankPage> createState() => _RankPageState();
 }
 
-class _RankPageState extends State<RankPage> {
+class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin{
   int tab = 0; // 0 = 전체, 1 = 내 디자인
 
+  late TabController _tabController;
   late Future<List<RankItem>> _rankFuture;
 
   @override
   void initState() {
     super.initState();
+
+    _tabController = TabController(length: 2, vsync: this);
+
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) return;
+
+      setState(() {
+        tab = _tabController.index;
+        _rankFuture = (tab == 0) ? _loadRanking() : _loadMyRanking();
+      });
+    });
+
     _rankFuture = _loadRanking();
   }
+
 
   // -------------------------------------------------------------------------
   // 전체 랭킹 불러오기
   // -------------------------------------------------------------------------
   Future<List<RankItem>> _loadRanking() async {
-    final ranking = RankingService.getRanking(); // designId + score
+    final box = DesignRepository.box;
+
+    // 1) values는 Hive의 "삽입 순서"가 그대로 유지됨
+    final values = box.values.toList();
+
+    // 2) 최신순 정렬 (최근 저장된 디자인이 위)
+    final reversedValues = values.reversed.toList();
+
     List<RankItem> items = [];
 
-    for (final entry in ranking) {
-      final designId = entry.key;
-      final score = entry.value;
+    for (int i = 0; i < reversedValues.length; i++) {
+      final map = Map<String, dynamic>.from(reversedValues[i]);
 
-      final design = DesignRepository.get(designId);
-      if (design != null) {
-        items.add(
-          RankItem(
-            id: designId,
-            design: design,
-            score: score,
-            isLiked: RankingService.isLiked(designId),
-          ),
-        );
-      }
+      final design = Design.fromMap(map);
+
+      // keyAt(i)도 reversed 적용된 index 기준으로 가져와야 함
+      final id = box.keyAt(values.length - 1 - i).toString();
+
+      items.add(
+        RankItem(
+          id: id,
+          design: design,
+          score: RankingService.getScore(id),
+          isLiked: RankingService.isLiked(id),
+        ),
+      );
     }
 
     return items;
   }
+
 
   // -------------------------------------------------------------------------
   // 내가 올린 디자인 랭킹 불러오기 (+ 전체 등수 계산)
@@ -91,23 +115,30 @@ class _RankPageState extends State<RankPage> {
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: CupertinoSegmentedControl(
-              groupValue: tab,
-              onValueChanged: (v) {
-                setState(() {
-                  tab = v;
-                  _rankFuture = (v == 0) ? _loadRanking() : _loadMyRanking();
-                });
-              },
-              children: const {
-                0: Text("전체 랭킹"),
-                1: Text("내 디자인"),
-              },
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              labelColor: Colors.black,
+              unselectedLabelColor: Colors.grey,
+              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+              unselectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.w400),
+
+              indicator: const UnderlineTabIndicator(
+                borderSide: BorderSide(width: 2.5, color: Colors.black),
+                insets: EdgeInsets.symmetric(horizontal: 30), // ← 선을 짧게 만드는 포인트
+              ),
+
+              tabs: const [
+                Tab(text: "전체 랭킹"),
+                Tab(text: "내 디자인"),
+              ],
             ),
           ),
         ),
+
       ),
 
       body: FutureBuilder(

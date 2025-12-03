@@ -13,7 +13,7 @@ import 'screens/lji/consulting_page.dart';
 import 'screens/csw/login_page.dart';
 import 'screens/csw/signup_page.dart';
 import 'screens/csw/my_page.dart';
-import 'screens/kyh/design_page.dart';
+import 'screens/lji/design_page.dart';
 import 'data/dummy_data.dart';
 
 const bool DEV_AUTO_LOGIN = true; // 임시로그인
