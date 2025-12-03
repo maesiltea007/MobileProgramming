@@ -87,6 +87,7 @@ class _ColorPickerPageState extends State<ColorPickerPage> {
       fontColor: Colors.black,       // 글자색
       backgroundColor: _selectedColor, // 🔥 컬러피커에서 고른 색
       ownerId: userId,
+      createdAt: DateTime.now(),
     );
 
     // Hive에 Map 형태로 저장

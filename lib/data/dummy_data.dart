@@ -14,6 +14,8 @@ void insertDummyData() {
 
   print("🔥 Inserting dummy data...");
 
+  final now = DateTime.now();
+
   // DESIGN 1
   designs.put("d1", {
     "text": "Hello World",
@@ -21,6 +23,7 @@ void insertDummyData() {
     "fontColor": Colors.black.value,
     "backgroundColor": Colors.white.value,
     "ownerId": "user_dev_01",
+    "createdAt": now.subtract(const Duration(minutes: 3)).toIso8601String(),
   });
 
   // DESIGN 2
@@ -30,6 +33,7 @@ void insertDummyData() {
     "fontColor": Colors.white.value,
     "backgroundColor": Colors.blue.value,
     "ownerId": "user_dev_02",
+    "createdAt": now.subtract(const Duration(minutes: 2)).toIso8601String(),
   });
 
   // DESIGN 3
@@ -39,6 +43,7 @@ void insertDummyData() {
     "fontColor": Colors.black87.value,
     "backgroundColor": Colors.yellow.value,
     "ownerId": "user_dev_01",
+    "createdAt": now.subtract(const Duration(minutes: 1)).toIso8601String(),
   });
 
   // RANKING

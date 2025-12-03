@@ -47,6 +47,15 @@ class RankingService {
     return entries;
   }
 
+  static int getOverallRank(String designId) {
+    final rankingList = getRanking(); // score 많은 순으로 정렬된 전체 목록
+    for (int i = 0; i < rankingList.length; i++) {
+      if (rankingList[i].key == designId) {
+        return i + 1; // 등수는 1부터 시작
+      }
+    }
+    return -1; // 없는 경우(정상적 상황에선 거의 없음)
+  }
 
   static List<MapEntry<String, int>> getTop10() {
     return getRanking().take(10).toList();

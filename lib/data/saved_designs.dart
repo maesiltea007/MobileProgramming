@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import '../models/design.dart';
 
-//더미데이터셋
-//현재 프로젝트에 임포트된 폰트가 없어서 모든 폰트가 기본 폰트로 보입니다.
-const List<Design> UserDesigns = [
+List<Design> UserDesigns = [
   Design(
     text: 'hello',
     fontFamily: 'Arial',
     fontColor: Colors.white,
     backgroundColor: Color(0xFF5CA9FF),
     ownerId: 'dummy-user-1',
+    createdAt: DateTime.now().subtract(Duration(minutes: 5)),
   ),
   Design(
     text: 'world',
@@ -17,6 +16,7 @@ const List<Design> UserDesigns = [
     fontColor: Colors.white,
     backgroundColor: Color(0xFF2F9928),
     ownerId: 'dummy-user-1',
+    createdAt: DateTime.now().subtract(Duration(minutes: 4)),
   ),
   Design(
     text: 'Test',
@@ -24,33 +24,22 @@ const List<Design> UserDesigns = [
     fontColor: Colors.black,
     backgroundColor: Color(0xFFFFB7E5),
     ownerId: 'dummy-user-1',
+    createdAt: DateTime.now().subtract(Duration(minutes: 3)),
   ),
   Design(
-    text: 'Test',
+    text: 'Test2',
     fontFamily: 'Arial',
     fontColor: Colors.black,
     backgroundColor: Color(0xFFFFB7E5),
     ownerId: 'dummy-user-1',
+    createdAt: DateTime.now().subtract(Duration(minutes: 2)),
   ),
   Design(
-    text: 'Test',
+    text: 'Test3',
     fontFamily: 'Arial',
     fontColor: Colors.black,
     backgroundColor: Color(0xFFFFB7E5),
     ownerId: 'dummy-user-1',
-  ),
-  Design(
-    text: 'Test',
-    fontFamily: 'Arial',
-    fontColor: Colors.black,
-    backgroundColor: Color(0xFFFFB7E5),
-    ownerId: 'dummy-user-1',
-  ),
-  Design(
-    text: 'Test',
-    fontFamily: 'Arial',
-    fontColor: Colors.black,
-    backgroundColor: Color(0xFFFFB7E5),
-    ownerId: 'dummy-user-1',
+    createdAt: DateTime.now().subtract(Duration(minutes: 1)),
   ),
 ];

@@ -7,6 +7,7 @@ class Design {
   final Color fontColor;
   final Color backgroundColor;
   final String ownerId;
+  final DateTime createdAt;
 
   const Design({
     required this.text,
@@ -14,6 +15,7 @@ class Design {
     required this.fontColor,
     required this.backgroundColor,
     required this.ownerId,
+    required this.createdAt,
   });
 
   Map<String, dynamic> toMap() =>
@@ -23,6 +25,7 @@ class Design {
         "fontColor": fontColor.value,
         "backgroundColor": backgroundColor.value,
         "ownerId": ownerId,
+        "createdAt": createdAt.toIso8601String(),
       };
 
   factory Design.fromMap(Map<String, dynamic> map) {
@@ -32,6 +35,7 @@ class Design {
       fontColor: Color(map["fontColor"]),
       backgroundColor: Color(map["backgroundColor"]),
       ownerId: map["ownerId"],
+      createdAt: DateTime.parse(map["createdAt"]),
     );
   }
 }

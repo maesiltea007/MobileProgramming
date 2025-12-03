@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import '../../models/design.dart';
 import '../../data/saved_designs.dart';
-import '../kyh/design_page.dart';
+import 'design_page.dart';
 
 //디자인카드 위젯
 class DesignCard extends StatelessWidget {
@@ -49,12 +49,13 @@ class LibraryPage extends StatelessWidget {
       }
 
       // 혹시 데이터가 이상하면 기본값 하나
-      return const Design(
+      return Design(
         text: '',
         fontFamily: 'Arial',
         fontColor: Colors.black,
         backgroundColor: Colors.white,
         ownerId: '',
+        createdAt: DateTime.fromMillisecondsSinceEpoch(0),
       );
     }).toList();
 

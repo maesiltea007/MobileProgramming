@@ -94,6 +94,7 @@ class _DesignPageState extends State<DesignPage> {
       fontColor: widget.design.fontColor,
       backgroundColor: widget.design.backgroundColor,
       ownerId: app.currentUserId!,
+      createdAt: DateTime.now(),
     );
 
     DesignRepository.save(id, updatedDesign);

@@ -4,6 +4,8 @@ import '../models/design.dart';
 class DesignRepository {
   static final _box = Hive.box('designsbox');
 
+  static Box get box => _box;
+
   static void save(String id, Design design) {
     _box.put(id, design.toMap());
   }
