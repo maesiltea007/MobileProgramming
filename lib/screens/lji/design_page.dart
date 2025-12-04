@@ -8,38 +8,55 @@ import '../../state/app_state.dart';
 class DesignPage extends StatefulWidget {
   final Design design;
   const DesignPage({super.key, required this.design});
-
   @override
   State<DesignPage> createState() => _DesignPageState();
 }
 
 class _DesignPageState extends State<DesignPage> {
-  late TextEditingController _textController;
-
   late Color _backgroundColor;
   late Color _fontColor;
   late String _fontFamily;
   late String _text; // state 변수
+  late TextEditingController _bgHexController;
+  late TextEditingController _fontHexController;
+  late TextEditingController _textController; // 컨트롤러
 
   @override
   void initState() {
     super.initState();
-    _textController = TextEditingController(text: widget.design.text);
     _backgroundColor = widget.design.backgroundColor;
     _fontColor = widget.design.fontColor;
     _fontFamily = widget.design.fontFamily;
     _text = widget.design.text; // 디자인 복사
+    _bgHexController   = TextEditingController(text: _colorToHex(_backgroundColor));
+    _fontHexController = TextEditingController(text: _colorToHex(_fontColor));
+    _textController = TextEditingController(text: widget.design.text);
   }
 
   @override
   void dispose() {
     _textController.dispose();
+    _bgHexController.dispose();
+    _fontHexController.dispose();
     super.dispose();
   }
 
   String _colorToHex(Color color) {
     final v = color.value.toRadixString(16).padLeft(8, '0');
     return '#${v.substring(2).toUpperCase()}';
+  }
+  Color? _hexToColor(String input) {
+    String value = input.trim();
+    if (value.startsWith('#')) {
+      value = value.substring(1);
+    }
+    if (value.length != 6) return null;
+    try {
+      final intColor = int.parse(value, radix: 16);
+      return Color(0xFF000000 | intColor); // 항상 불투명
+    } catch (_) {
+      return null;
+    }
   }
 
   @override
@@ -172,7 +189,7 @@ class _DesignPageState extends State<DesignPage> {
     );
   }
 
-  // 배경색 선택 위젯
+// 배경색 선택 위젯
   Widget _buildBackgroundColorRow(Color bg) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -190,27 +207,50 @@ class _DesignPageState extends State<DesignPage> {
           ),
         ),
         const SizedBox(width: 16),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'background color',
-              style: TextStyle(fontSize: 16),
-            ),
-            Text(
-              _colorToHex(bg),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+        Expanded( // 🔥 남은 가로 전부 사용
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'background color',
+                style: TextStyle(fontSize: 16),
               ),
-            ),
-          ],
+              TextField(
+                controller: _bgHexController,
+                maxLength: 7,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: const InputDecoration(
+                  isDense: true,
+                  counterText: '',
+                  contentPadding: EdgeInsets.only(top: 2),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(width: 1, color: Colors.black54),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(width: 1.2, color: Colors.black),
+                  ),
+                ),
+                onSubmitted: (value) {
+                  final c = _hexToColor(value);
+                  if (c != null) {
+                    setState(() {
+                      _backgroundColor = c;
+                      _bgHexController.text = _colorToHex(c);
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ],
     );
   }
 
-  // 폰트 컬러 선택 위젯
+// 폰트 컬러 선택 위젯
   Widget _buildFontColorRow(Color fontColor) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -228,21 +268,44 @@ class _DesignPageState extends State<DesignPage> {
           ),
         ),
         const SizedBox(width: 16),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'font color',
-              style: TextStyle(fontSize: 16),
-            ),
-            Text(
-              _colorToHex(fontColor),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'font color',
+                style: TextStyle(fontSize: 16),
               ),
-            ),
-          ],
+              TextField(
+                controller: _fontHexController,
+                maxLength: 7,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: const InputDecoration(
+                  isDense: true,
+                  counterText: '',
+                  contentPadding: EdgeInsets.only(top: 2),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(width: 1, color: Colors.black54),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(width: 1.2, color: Colors.black),
+                  ),
+                ),
+                onSubmitted: (value) {
+                  final c = _hexToColor(value);
+                  if (c != null) {
+                    setState(() {
+                      _fontColor = c;
+                      _fontHexController.text = _colorToHex(c);
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -401,7 +464,6 @@ class _DesignPageState extends State<DesignPage> {
   String generateDesignId() {
     return DateTime.now().millisecondsSinceEpoch.toString();
   }
-
   // save as new
   void _saveAsNew() {
     final app = Provider.of<AppState>(context, listen: false);
@@ -409,7 +471,6 @@ class _DesignPageState extends State<DesignPage> {
       _showLoginRequiredDialog();
       return;
     }
-
     final id = generateDesignId();
     final updatedDesign = Design(
       id: id,
@@ -431,13 +492,11 @@ class _DesignPageState extends State<DesignPage> {
       _showLoginRequiredDialog();
       return;
     }
-
     final existingId = widget.design.id; // 기존 디자인 ID
     if (existingId == null) { // id가 없으면 그냥 새로 저장
       _saveAsNew();
       return;
     }
-
     final updatedDesign = Design(
       id: existingId,
       text: _text,
@@ -447,7 +506,6 @@ class _DesignPageState extends State<DesignPage> {
       ownerId: widget.design.ownerId,        // 원래 주인 유지
       createdAt: widget.design.createdAt,    // 생성 시각 유지
     );
-
     DesignRepository.save(existingId, updatedDesign);
     Navigator.pop(context);
   }
