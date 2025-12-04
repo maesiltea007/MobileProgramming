@@ -4,6 +4,7 @@ import '../../services/design_repository.dart';
 import '../../services/ranking_service.dart';
 import 'package:provider/provider.dart';
 import '../../state/app_state.dart';
+import 'consulting_page.dart';
 
 class DesignPage extends StatefulWidget {
   final Design design;
@@ -65,30 +66,81 @@ class _DesignPageState extends State<DesignPage> {
       appBar: AppBar(
         title: const Text('Design Page'),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-        child: SizedBox(
-          width: double.infinity,
-          height: 54,
-          child: ElevatedButton(
-              onPressed: _showSaveOptions,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          child: Row(
+            children: [
+              // Save 버튼
+              Expanded(
+                child: SizedBox(
+                  height: 54,
+                  child: ElevatedButton(
+                    onPressed: _showSaveOptions,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
-            child: const Text(
-              'Save',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
+
+              const SizedBox(width: 12),
+
+              // 채팅 버튼
+              SizedBox(
+                width: 54,
+                height: 54,
+                child: GestureDetector(
+                  onTap: () {
+                    final current = Design(
+                      id: widget.design.id,
+                      text: _text,
+                      fontFamily: _fontFamily,
+                      fontColor: _fontColor,
+                      backgroundColor: _backgroundColor,
+                      ownerId: widget.design.ownerId,
+                      createdAt: widget.design.createdAt,
+                    );
+
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => ConsultingPage(design: current),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.25),
+                          blurRadius: 6,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.chat,
+                      color: Colors.white,
+                      size: 22,
+                    ),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ),
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -110,16 +162,13 @@ class _DesignPageState extends State<DesignPage> {
   }
 
   void _saveDesign() {
-    // 0) 로그인 체크
+    // 로그인 체크
     final app = Provider.of<AppState>(context, listen: false);
     if (!app.isLoggedIn) {
       _showLoginRequiredDialog();
       return;
     }
-
-    // 로그인된 상태라면 저장 로직 진행
     final id = generateDesignId();
-
     final updatedDesign = Design(
       text: _text,
       fontFamily: _fontFamily,
@@ -160,29 +209,34 @@ class _DesignPageState extends State<DesignPage> {
     );
   }
 
-
   // 상단 프리뷰 위젯
   Widget _buildPreview(Color bg, Color fontColor, String fontFamily) {
-    return Container(
-      height: 200,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Colors.black,
-          width: 2,
-        ),
-      ),
-      child: Center(
-        child: Text(
-          _text,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: fontFamily,
-            color: fontColor,
-            fontSize: 48,
-            fontWeight: FontWeight.w500,
+    return Hero(
+      tag: 'design-preview-${widget.design.id ?? 'temp'}',
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          height: 200,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: Colors.black,
+              width: 2,
+            ),
+          ),
+          child: Center(
+            child: Text(
+              _text,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: fontFamily,
+                color: fontColor,
+                fontSize: 48,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ),
       ),
