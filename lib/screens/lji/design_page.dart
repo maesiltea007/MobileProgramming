@@ -5,15 +5,8 @@ import '../../services/ranking_service.dart';
 import 'package:provider/provider.dart';
 import '../../state/app_state.dart';
 
-
-// 디자인 ID 생성 함수
-String generateDesignId() {
-  return DateTime.now().millisecondsSinceEpoch.toString();
-}
-
 class DesignPage extends StatefulWidget {
   final Design design;
-
   const DesignPage({super.key, required this.design});
 
   @override
@@ -23,10 +16,19 @@ class DesignPage extends StatefulWidget {
 class _DesignPageState extends State<DesignPage> {
   late TextEditingController _textController;
 
+  late Color _backgroundColor;
+  late Color _fontColor;
+  late String _fontFamily;
+  late String _text; // state 변수
+
   @override
   void initState() {
     super.initState();
     _textController = TextEditingController(text: widget.design.text);
+    _backgroundColor = widget.design.backgroundColor;
+    _fontColor = widget.design.fontColor;
+    _fontFamily = widget.design.fontFamily;
+    _text = widget.design.text; // 디자인 복사
   }
 
   @override
@@ -42,32 +44,46 @@ class _DesignPageState extends State<DesignPage> {
 
   @override
   Widget build(BuildContext context) {
-    final bg = widget.design.backgroundColor;
-    final fontColor = widget.design.fontColor;
-    final fontFamily = widget.design.fontFamily;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Design Page'),
       ),
-
-      floatingActionButton: FloatingActionButton(
-        onPressed: _saveDesign,
-        child: const Icon(Icons.save),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+        child: SizedBox(
+          width: double.infinity,
+          height: 54,
+          child: ElevatedButton(
+              onPressed: _showSaveOptions,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text(
+              'Save',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
       ),
-
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildPreview(bg, fontColor, fontFamily),
+            _buildPreview(_backgroundColor, _fontColor, _fontFamily),
             const SizedBox(height: 32),
-            _buildBackgroundColorRow(bg),
+            _buildBackgroundColorRow(_backgroundColor),
             const SizedBox(height: 24),
-            _buildFontColorRow(fontColor),
+            _buildFontColorRow(_fontColor),
             const SizedBox(height: 24),
-            _buildFontRow(fontFamily, fontColor),
+            _buildFontRow(_fontFamily, _fontColor),
             const SizedBox(height: 24),
             _buildTextRow(),
           ],
@@ -79,7 +95,6 @@ class _DesignPageState extends State<DesignPage> {
   void _saveDesign() {
     // 0) 로그인 체크
     final app = Provider.of<AppState>(context, listen: false);
-
     if (!app.isLoggedIn) {
       _showLoginRequiredDialog();
       return;
@@ -89,10 +104,10 @@ class _DesignPageState extends State<DesignPage> {
     final id = generateDesignId();
 
     final updatedDesign = Design(
-      text: _textController.text,
-      fontFamily: widget.design.fontFamily,
-      fontColor: widget.design.fontColor,
-      backgroundColor: widget.design.backgroundColor,
+      text: _text,
+      fontFamily: _fontFamily,
+      fontColor: _fontColor,
+      backgroundColor: _backgroundColor,
       ownerId: app.currentUserId!,
       createdAt: DateTime.now(),
     );
@@ -144,7 +159,7 @@ class _DesignPageState extends State<DesignPage> {
       ),
       child: Center(
         child: Text(
-          _textController.text,
+          _text,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: fontFamily,
@@ -156,7 +171,6 @@ class _DesignPageState extends State<DesignPage> {
       ),
     );
   }
-
 
   // 배경색 선택 위젯
   Widget _buildBackgroundColorRow(Color bg) {
@@ -195,7 +209,6 @@ class _DesignPageState extends State<DesignPage> {
       ],
     );
   }
-
 
   // 폰트 컬러 선택 위젯
   Widget _buildFontColorRow(Color fontColor) {
@@ -293,7 +306,11 @@ class _DesignPageState extends State<DesignPage> {
               const SizedBox(height: 8),
               TextField(
                 controller: _textController,
-                onChanged: (_) => setState(() {}),
+                onChanged: (value) {
+                  setState(() {
+                    _text = value;
+                  });
+                },
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -312,5 +329,95 @@ class _DesignPageState extends State<DesignPage> {
         ),
       ],
     );
+  }
+
+  // 팝업창 "overwrite" or "save as new"
+  void _showSaveOptions() {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text("Save Options"),
+          content: const Text("Choose how you want to save the design."),
+          actions: [
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () => Navigator.pop(context),
+            ),
+
+            TextButton(
+              child: const Text("Save as New"),
+              onPressed: () {
+                Navigator.pop(context);
+                _saveAsNew();     // 새로 저장
+              },
+            ),
+
+            TextButton(
+              child: const Text("Overwrite"),
+              onPressed: () {
+                Navigator.pop(context);
+                _overwriteSave(); // 덮어쓰기
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // 디자인 ID 생성 함수
+  String generateDesignId() {
+    return DateTime.now().millisecondsSinceEpoch.toString();
+  }
+
+  // save as new
+  void _saveAsNew() {
+    final app = Provider.of<AppState>(context, listen: false);
+    if (!app.isLoggedIn) {
+      _showLoginRequiredDialog();
+      return;
+    }
+
+    final id = generateDesignId();
+    final updatedDesign = Design(
+      id: id,
+      text: _text,
+      fontFamily: _fontFamily,
+      fontColor: _fontColor,
+      backgroundColor: _backgroundColor,
+      ownerId: app.currentUserId!,
+      createdAt: DateTime.now(),
+    );
+    DesignRepository.save(id, updatedDesign);
+    Navigator.pop(context);
+  }
+
+// overwrite 덮어쓰기
+  void _overwriteSave() {
+    final app = Provider.of<AppState>(context, listen: false);
+    if (!app.isLoggedIn) { // 로그인 체크
+      _showLoginRequiredDialog();
+      return;
+    }
+
+    final existingId = widget.design.id; // 기존 디자인 ID
+    if (existingId == null) { // id가 없으면 그냥 새로 저장
+      _saveAsNew();
+      return;
+    }
+
+    final updatedDesign = Design(
+      id: existingId,
+      text: _text,
+      fontFamily: _fontFamily,
+      fontColor: _fontColor,
+      backgroundColor: _backgroundColor,
+      ownerId: widget.design.ownerId,        // 원래 주인 유지
+      createdAt: widget.design.createdAt,    // 생성 시각 유지
+    );
+
+    DesignRepository.save(existingId, updatedDesign);
+    Navigator.pop(context);
   }
 }

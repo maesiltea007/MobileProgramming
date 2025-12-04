@@ -22,6 +22,7 @@ class Design {
 
   Map<String, dynamic> toMap() =>
       {
+        "id": id,
         "text": text,
         "fontFamily": fontFamily,
         "fontColor": fontColor.value,
@@ -32,6 +33,7 @@ class Design {
 
   factory Design.fromMap(Map<String, dynamic> map) {
     return Design(
+      id: map["id"],
       text: map["text"],
       fontFamily: map["fontFamily"],
       fontColor: Color(map["fontColor"]),

@@ -18,6 +18,7 @@ void insertDummyData() {
 
   // DESIGN 1
   designs.put("d1", {
+    "id": "d1",
     "text": "Hello World",
     "fontFamily": "Roboto",
     "fontColor": Colors.black.value,
@@ -28,6 +29,7 @@ void insertDummyData() {
 
   // DESIGN 2
   designs.put("d2", {
+    "id": "d2",
     "text": "Epic Design",
     "fontFamily": "GmarketSans",
     "fontColor": Colors.white.value,
@@ -38,6 +40,7 @@ void insertDummyData() {
 
   // DESIGN 3
   designs.put("d3", {
+    "id": "d3",
     "text": "Color Font App",
     "fontFamily": "NanumSquare",
     "fontColor": Colors.black87.value,
