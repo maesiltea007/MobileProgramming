@@ -44,10 +44,6 @@ Future<void> main() async {
 
         appState.initializeAuth();
 
-        if (DEV_AUTO_LOGIN) {
-          appState.devLogin(); // 🔥 개발 중 자동 로그인
-        }
-
         return appState;
       },
       child: const MyApp(),

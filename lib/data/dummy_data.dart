@@ -7,10 +7,10 @@ void insertDummyData() {
   final likes = Hive.box('likesbox');
 
   // 이미 있으면 생성 X
-  if (designs.isNotEmpty) {
-    print("⚠️ Dummy data already exists. Skipped.");
-    return;
-  }
+  //if (designs.isNotEmpty) {
+  //  print("⚠️ Dummy data already exists. Skipped.");
+  //  return;
+  //}
 
   print("🔥 Inserting dummy data...");
 
@@ -53,7 +53,7 @@ void insertDummyData() {
     "fontFamily": "NanumSquare",
     "fontColor": Colors.black87.value,
     "backgroundColor": Colors.yellow.value,
-    "ownerId": "user_dev_01",
+    "ownerId": "7xZ8NHb62OTAf3R9LQQEgxTZnC03",
     "createdAt": now.subtract(const Duration(minutes: 1)).toIso8601String(),
   });
   designs.put("d5", {
@@ -62,7 +62,7 @@ void insertDummyData() {
     "fontFamily": "NanumSquare",
     "fontColor": Colors.white.value,
     "backgroundColor": Colors.blue.value,
-    "ownerId": "user_dev_01",
+    "ownerId": "7xZ8NHb62OTAf3R9LQQEgxTZnC03",
     "createdAt": now.subtract(const Duration(minutes: 1)).toIso8601String(),
   });
 

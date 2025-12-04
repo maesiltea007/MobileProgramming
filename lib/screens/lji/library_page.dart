@@ -3,6 +3,8 @@ import 'package:hive/hive.dart';
 import '../../models/design.dart';
 import '../../data/saved_designs.dart';
 import 'design_page.dart';
+import 'package:provider/provider.dart';
+import '../../state/app_state.dart';
 
 //디자인카드 위젯
 class DesignCard extends StatelessWidget {
@@ -26,6 +28,7 @@ class DesignCard extends StatelessWidget {
             fontSize: 30
           ),
         ),
+
       ),
     );
   }
@@ -36,6 +39,8 @@ class LibraryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
+    final currentUserId = appState.currentUserId; //로그인한 계정 정보 가져오기
     final designsBox = Hive.box('designsbox');
 
     // 1) Hive에 있는 디자인들 전부 꺼내서 Design 리스트로 변환
@@ -60,8 +65,13 @@ class LibraryPage extends StatelessWidget {
     }).toList();
 
     // 2) Hive에 아무것도 없으면 → 기존 더미데이터 사용
-    final List<Design> designs =
-    hiveDesigns.isNotEmpty ? hiveDesigns : UserDesigns;
+    final List<Design> designs = (hiveDesigns.isNotEmpty ? hiveDesigns : UserDesigns)
+        .where((d) => d.ownerId == currentUserId) //로그인한 유저의 계정만 필터링
+        .toList();
+
+    print('currentUserId = $currentUserId');
+    print('hiveDesigns length = ${hiveDesigns.length}');
+    print('filtered designs length = ${designs.length}'); //테스용 프린트
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -93,4 +103,3 @@ class LibraryPage extends StatelessWidget {
     );
   }
 }
-
