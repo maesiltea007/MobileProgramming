@@ -335,30 +335,61 @@ class _DesignPageState extends State<DesignPage> {
   void _showSaveOptions() {
     showDialog(
       context: context,
-      builder: (_) {
+      builder: (context) {
         return AlertDialog(
           title: const Text("Save Options"),
-          content: const Text("Choose how you want to save the design."),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _saveAsNew();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    "Save as New",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _overwriteSave();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey[800],
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    "Overwrite",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+            ],
+          ),
           actions: [
             TextButton(
               child: const Text("Cancel"),
               onPressed: () => Navigator.pop(context),
-            ),
-
-            TextButton(
-              child: const Text("Save as New"),
-              onPressed: () {
-                Navigator.pop(context);
-                _saveAsNew();     // 새로 저장
-              },
-            ),
-
-            TextButton(
-              child: const Text("Overwrite"),
-              onPressed: () {
-                Navigator.pop(context);
-                _overwriteSave(); // 덮어쓰기
-              },
             ),
           ],
         );
