@@ -46,6 +46,26 @@ void insertDummyData() {
     "createdAt": now.subtract(const Duration(minutes: 1)).toIso8601String(),
   });
 
+  //현재 로그인한 계정 디자인들
+  designs.put("d4", {
+    "id": "d4",
+    "text": "Color Font App",
+    "fontFamily": "NanumSquare",
+    "fontColor": Colors.black87.value,
+    "backgroundColor": Colors.yellow.value,
+    "ownerId": "user_dev_01",
+    "createdAt": now.subtract(const Duration(minutes: 1)).toIso8601String(),
+  });
+  designs.put("d5", {
+    "id": "d5",
+    "text": "Color Font App",
+    "fontFamily": "NanumSquare",
+    "fontColor": Colors.white.value,
+    "backgroundColor": Colors.blue.value,
+    "ownerId": "user_dev_01",
+    "createdAt": now.subtract(const Duration(minutes: 1)).toIso8601String(),
+  });
+
   // RANKING
   ranking.put("d1", 12);
   ranking.put("d2", 7);

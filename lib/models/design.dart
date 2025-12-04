@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 //유저의 디자인 데이터형식입니다.
 class Design {
+  final String? id;
   final String text;
   final String fontFamily;
   final Color fontColor;
@@ -10,6 +11,7 @@ class Design {
   final DateTime createdAt;
 
   const Design({
+    this.id,
     required this.text,
     required this.fontFamily,
     required this.fontColor,
