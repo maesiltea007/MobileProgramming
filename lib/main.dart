@@ -9,7 +9,6 @@ import 'screens/kyh/rank_page.dart';
 import 'screens/ljh/scan_page.dart';
 import 'screens/ljh/color_picker_page.dart';
 import 'screens/lji/library_page.dart';
-import 'screens/lji/consulting_page.dart';
 import 'screens/csw/login_page.dart';
 import 'screens/csw/signup_page.dart';
 import 'screens/csw/my_page.dart';
@@ -91,7 +90,6 @@ class _MainNavigatorState extends State<MainNavigator> {
     RankPage(),
     ScanPage(),
     LibraryPage(),
-    ConsultingPage(),
   ];
 
   final List<String> _titles = [
@@ -99,7 +97,6 @@ class _MainNavigatorState extends State<MainNavigator> {
     '랭크',
     '스캔',
     '라이브러리',
-    '컨설팅',
   ];
 
   void _onItemTapped(int index) => setState(() => _selectedIndex = index);
@@ -126,7 +123,6 @@ class _MainNavigatorState extends State<MainNavigator> {
           BottomNavigationBarItem(icon: Icon(Icons.star), label: '랭크'),
           BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: '스캔'),
           BottomNavigationBarItem(icon: Icon(Icons.library_books), label: '라이브러리'),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: '컨설팅'),
         ],
       ),
     );
