@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-//유저의 디자인 데이터형식입니다.
 class Design {
   final String? id;
   final String text;
@@ -8,7 +7,7 @@ class Design {
   final Color fontColor;
   final Color backgroundColor;
   final String ownerId;
-  final DateTime createdAt;
+  final DateTime? createdAt; // 🔥 nullable
 
   const Design({
     this.id,
@@ -17,7 +16,7 @@ class Design {
     required this.fontColor,
     required this.backgroundColor,
     required this.ownerId,
-    required this.createdAt,
+    this.createdAt, // 🔥 nullable
   });
 
   Map<String, dynamic> toMap() =>
@@ -28,7 +27,8 @@ class Design {
         "fontColor": fontColor.value,
         "backgroundColor": backgroundColor.value,
         "ownerId": ownerId,
-        "createdAt": createdAt.toIso8601String(),
+        // 🔥 createdAt이 있을 때만 map에 저장
+        if (createdAt != null) "createdAt": createdAt!.toIso8601String(),
       };
 
   factory Design.fromMap(Map<String, dynamic> map) {
@@ -42,11 +42,10 @@ class Design {
       backgroundColor:
       Color((map["backgroundColor"] as int?) ?? Colors.white.value),
       ownerId: (map["ownerId"] as String?) ?? '',
-      createdAt: createdAtStr != null
-          ? DateTime.parse(createdAtStr)
-          : DateTime.now(), // createdAt 없으면 현재 시간으로
+      createdAt:
+      createdAtStr != null ? DateTime.parse(createdAtStr) : null, // 🔥 null 유지
     );
   }
-
 }
+
 

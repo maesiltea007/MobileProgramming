@@ -57,7 +57,6 @@ void insertDummyData() {
     "fontColor": Colors.black87.value,
     "backgroundColor": Colors.yellow.value,
     "ownerId": "7xZ8NHb62OTAf3R9LQQEgxTZnC03",
-    "createdAt": now.subtract(const Duration(minutes: 1)).toIso8601String(),
   });
   designs.put("d5", {
     "id": "d5",
@@ -66,7 +65,6 @@ void insertDummyData() {
     "fontColor": Colors.white.value,
     "backgroundColor": Colors.blue.value,
     "ownerId": "7xZ8NHb62OTAf3R9LQQEgxTZnC03",
-    "createdAt": now.subtract(const Duration(minutes: 1)).toIso8601String(),
   });
 
   // RANKING

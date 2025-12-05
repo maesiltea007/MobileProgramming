@@ -142,6 +142,34 @@ class _DesignPageState extends State<DesignPage> {
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
         child: Row(
           children: [
+            // 🔥 Publish (랭킹에 올리기) 버튼 - 왼쪽에 추가
+            SizedBox(
+              width: 54,
+              height: 54,
+              child: GestureDetector(
+                onTap: _publishToRanking,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.blueAccent,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.25),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.send, // ✈ 비행기 아이콘
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(width: 12),
             // Save 버튼
             Expanded(
               child: SizedBox(
@@ -215,23 +243,53 @@ class _DesignPageState extends State<DesignPage> {
     );
   }
 
-  void _saveDesign() {
-    final app = Provider.of<AppState>(context, listen: false);
-    final id = generateDesignId();
-    final updatedDesign = Design(
-      text: _text,
-      fontFamily: _fontFamily,
-      fontColor: _fontColor,
-      backgroundColor: _backgroundColor,
-      ownerId: app.currentUserId!,
-      createdAt: DateTime.now(),
+  void _publishToRanking() {
+    final id = widget.design.id;
+
+    if (id == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please save the design first.')),
+      );
+      return;
+    }
+
+    // 이미 등록되어 있으면 중복 방지
+    if (RankingService.rankingBox.containsKey(id)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(
+            'This design is already published to the ranking.'
+        )),
+      );
+      return;
+    }
+
+    // 🔥 기존 디자인 불러오기
+    final design = DesignRepository.get(id)!;
+
+    // 🔥 createdAt 을 지금 시간으로 설정한 새 디자인 객체 생성
+    final updated = Design(
+      id: design.id,
+      text: design.text,
+      fontFamily: design.fontFamily,
+      fontColor: design.fontColor,
+      backgroundColor: design.backgroundColor,
+      ownerId: design.ownerId,
+      createdAt: DateTime.now(), // ⭐ 랭킹 등록 시간
     );
 
-    DesignRepository.save(id, updatedDesign);
+    // 🔥 DB에 저장
+    DesignRepository.save(id, updated);
+
+    // 🔥 랭킹 점수 초기화
     RankingService.initializeDesign(id);
 
-    Navigator.pop(context);
+    // 완료 메시지
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+          content: Text('Your design has been published to the ranking!')),
+    );
   }
+
 
   // 상단 프리뷰 위젯
   Widget _buildPreview(Color bg, Color fontColor, String fontFamily, String text) {
@@ -356,7 +414,7 @@ class _DesignPageState extends State<DesignPage> {
   Design _buildCurrentDesign({
     String? id,
     required String ownerId,
-    required DateTime createdAt,
+    DateTime? createdAt,
   }) {
     return Design(
       id: id,
@@ -393,7 +451,6 @@ class _DesignPageState extends State<DesignPage> {
     final updatedDesign = _buildCurrentDesign(
       id: existingId,
       ownerId: widget.design.ownerId,
-      createdAt: widget.design.createdAt,
     );
     DesignRepository.save(existingId, updatedDesign);
     Navigator.of(context).popUntil((route) => route.isFirst);

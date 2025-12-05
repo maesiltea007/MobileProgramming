@@ -62,7 +62,13 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
     }
 
     // 2) 최신(createdAt) 순으로 정렬
-    designs.sort((a, b) => b.value.createdAt.compareTo(a.value.createdAt));
+    designs.sort((a, b) {
+      final aTime = a.value.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bTime = b.value.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+
+      return bTime.compareTo(aTime); // 최신순(내림차순)
+    });
+
 
     final rankingBox = RankingService.rankingBox;
 
