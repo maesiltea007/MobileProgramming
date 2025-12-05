@@ -5,6 +5,7 @@ import '../../services/ranking_service.dart';
 import 'package:provider/provider.dart';
 import '../../state/app_state.dart';
 import 'consulting_page.dart';
+import 'library_page.dart';
 
 class DesignPage extends StatefulWidget {
   final Design design;
@@ -29,7 +30,9 @@ class _DesignPageState extends State<DesignPage> {
     _fontColor = widget.design.fontColor;
     _fontFamily = widget.design.fontFamily;
     _text = widget.design.text; // 디자인 복사
-    _bgHexController   = TextEditingController(text: _colorToHex(_backgroundColor));
+    _bgHexController = TextEditingController(
+      text: _colorToHex(_backgroundColor),
+    );
     _fontHexController = TextEditingController(text: _colorToHex(_fontColor));
     _textController = TextEditingController(text: widget.design.text);
   }
@@ -46,6 +49,7 @@ class _DesignPageState extends State<DesignPage> {
     final v = color.value.toRadixString(16).padLeft(8, '0');
     return '#${v.substring(2).toUpperCase()}';
   }
+
   Color? _hexToColor(String input) {
     String value = input.trim();
     if (value.startsWith('#')) {
@@ -64,83 +68,140 @@ class _DesignPageState extends State<DesignPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Design Page'),
-      ),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-          child: Row(
-            children: [
-              // Save 버튼
-              Expanded(
-                child: SizedBox(
-                  height: 54,
-                  child: ElevatedButton(
-                    onPressed: _showSaveOptions,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      'Save',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+        automaticallyImplyLeading: false,
+        titleSpacing: 0,
+        title: Row(
+          children: [
+            const SizedBox(width: 12),
+
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
+              child: const Text(
+                'Go to library',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
+            ),
+            const Spacer(),
+            ElevatedButton(
+              onPressed: () {
+                final current = Design(
+                  id: widget.design.id,
+                  text: _text,
+                  fontFamily: _fontFamily,
+                  fontColor: _fontColor,
+                  backgroundColor: _backgroundColor,
+                  ownerId: widget.design.ownerId,
+                  createdAt: widget.design.createdAt,
+                );
 
-              const SizedBox(width: 12),
-
-              // 채팅 버튼
-              SizedBox(
-                width: 54,
-                height: 54,
-                child: GestureDetector(
-                  onTap: () {
-                    final current = Design(
-                      id: widget.design.id,
-                      text: _text,
-                      fontFamily: _fontFamily,
-                      fontColor: _fontColor,
-                      backgroundColor: _backgroundColor,
-                      ownerId: widget.design.ownerId,
-                      createdAt: widget.design.createdAt,
-                    );
-
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => ConsultingPage(design: current),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.25),
-                          blurRadius: 6,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.chat,
-                      color: Colors.white,
-                      size: 22,
-                    ),
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => ConsultingPage(design: current),
                   ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 8,
+                ),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                minimumSize: const Size(0, 0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-            ],
-          ),
+              child: const Text(
+                'Consult it',
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+              ),
+            ),
+
+            const SizedBox(width: 12),
+          ],
         ),
+
+        // appBar / body 구분선
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(0.5),
+          child: Container(height: 0.5, color: Colors.black.withOpacity(0.2)),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+        child: Row(
+          children: [
+            // Save 버튼
+            Expanded(
+              child: SizedBox(
+                height: 54,
+                child: ElevatedButton(
+                  onPressed: _showSaveOptions,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Save',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(width: 12),
+
+            // 채팅 버튼
+            SizedBox(
+              width: 54,
+              height: 54,
+              child: GestureDetector(
+                onTap: () {
+                  final current = Design(
+                    id: widget.design.id,
+                    text: _text,
+                    fontFamily: _fontFamily,
+                    fontColor: _fontColor,
+                    backgroundColor: _backgroundColor,
+                    ownerId: widget.design.ownerId,
+                    createdAt: widget.design.createdAt,
+                  );
+
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => ConsultingPage(design: current),
+                    ),
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.25),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(Icons.chat, color: Colors.white, size: 22),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -221,10 +282,7 @@ class _DesignPageState extends State<DesignPage> {
           decoration: BoxDecoration(
             color: bg,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.black,
-              width: 2,
-            ),
+            border: Border.all(color: Colors.black, width: 2),
           ),
           child: Center(
             child: Text(
@@ -243,7 +301,7 @@ class _DesignPageState extends State<DesignPage> {
     );
   }
 
-// 배경색 선택 위젯
+  // 배경색 선택 위젯
   Widget _buildBackgroundColorRow(Color bg) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -254,21 +312,16 @@ class _DesignPageState extends State<DesignPage> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: bg,
-            border: Border.all(
-              color: Colors.black,
-              width: 2,
-            ),
+            border: Border.all(color: Colors.black, width: 2),
           ),
         ),
         const SizedBox(width: 16),
-        Expanded( // 🔥 남은 가로 전부 사용
+        Expanded(
+          // 🔥 남은 가로 전부 사용
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'background color',
-                style: TextStyle(fontSize: 16),
-              ),
+              const Text('background color', style: TextStyle(fontSize: 16)),
               TextField(
                 controller: _bgHexController,
                 maxLength: 7,
@@ -304,7 +357,7 @@ class _DesignPageState extends State<DesignPage> {
     );
   }
 
-// 폰트 컬러 선택 위젯
+  // 폰트 컬러 선택 위젯
   Widget _buildFontColorRow(Color fontColor) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -315,10 +368,7 @@ class _DesignPageState extends State<DesignPage> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: fontColor,
-            border: Border.all(
-              color: Colors.black,
-              width: 2,
-            ),
+            border: Border.all(color: Colors.black, width: 2),
           ),
         ),
         const SizedBox(width: 16),
@@ -326,10 +376,7 @@ class _DesignPageState extends State<DesignPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'font color',
-                style: TextStyle(fontSize: 16),
-              ),
+              const Text('font color', style: TextStyle(fontSize: 16)),
               TextField(
                 controller: _fontHexController,
                 maxLength: 7,
@@ -375,23 +422,17 @@ class _DesignPageState extends State<DesignPage> {
           style: TextStyle(
             fontSize: 40,
             fontWeight: FontWeight.w600,
-            fontFamily: fontFamily
+            fontFamily: fontFamily,
           ),
         ),
         const SizedBox(width: 16),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'font',
-              style: TextStyle(fontSize: 16),
-            ),
+            const Text('font', style: TextStyle(fontSize: 16)),
             Text(
               fontFamily,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -406,20 +447,14 @@ class _DesignPageState extends State<DesignPage> {
       children: [
         const Text(
           'Az',
-          style: TextStyle(
-            fontSize: 40,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontSize: 40, fontWeight: FontWeight.w600),
         ),
         const SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'text content',
-                style: TextStyle(fontSize: 16),
-              ),
+              const Text('text content', style: TextStyle(fontSize: 16)),
               const SizedBox(height: 8),
               TextField(
                 controller: _textController,
@@ -518,6 +553,7 @@ class _DesignPageState extends State<DesignPage> {
   String generateDesignId() {
     return DateTime.now().millisecondsSinceEpoch.toString();
   }
+
   // save as new
   void _saveAsNew() {
     final app = Provider.of<AppState>(context, listen: false);
@@ -539,15 +575,17 @@ class _DesignPageState extends State<DesignPage> {
     Navigator.pop(context);
   }
 
-// overwrite 덮어쓰기
+  // overwrite 덮어쓰기
   void _overwriteSave() {
     final app = Provider.of<AppState>(context, listen: false);
-    if (!app.isLoggedIn) { // 로그인 체크
+    if (!app.isLoggedIn) {
+      // 로그인 체크
       _showLoginRequiredDialog();
       return;
     }
     final existingId = widget.design.id; // 기존 디자인 ID
-    if (existingId == null) { // id가 없으면 그냥 새로 저장
+    if (existingId == null) {
+      // id가 없으면 그냥 새로 저장
       _saveAsNew();
       return;
     }
@@ -557,8 +595,8 @@ class _DesignPageState extends State<DesignPage> {
       fontFamily: _fontFamily,
       fontColor: _fontColor,
       backgroundColor: _backgroundColor,
-      ownerId: widget.design.ownerId,        // 원래 주인 유지
-      createdAt: widget.design.createdAt,    // 생성 시각 유지
+      ownerId: widget.design.ownerId, // 원래 주인 유지
+      createdAt: widget.design.createdAt, // 생성 시각 유지
     );
     DesignRepository.save(existingId, updatedDesign);
     Navigator.pop(context);

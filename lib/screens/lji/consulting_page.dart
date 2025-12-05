@@ -21,18 +21,81 @@ class ConsultingPage extends StatelessWidget {
           fontFamily: 'Roboto',
           fontColor: Colors.white,
           backgroundColor: Colors.black,
-          ownerId: 'system',
+          ownerId: 'new',
           createdAt: DateTime.fromMillisecondsSinceEpoch(0),
         );
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('consulting page'),
+        automaticallyImplyLeading: false,
+        titleSpacing: 0,
+        title: Row(
+          children: [
+            const SizedBox(width: 12),
+
+            // Design it 버튼
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    pageBuilder: (_, __, ___) => DesignPage(design: d),
+                    transitionsBuilder: (_, animation, __, child) {
+                      final tween = Tween<Offset>(
+                        begin: const Offset(-1.0, 0.0),
+                        end: Offset.zero,
+                      ).chain(CurveTween(curve: Curves.easeInOut));
+                      return SlideTransition(
+                        position: animation.drive(tween),
+                        child: child,
+                      );
+                    },
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                minimumSize: const Size(0, 0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text(
+                'Design it',
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+
+            const Spacer(),
+
+            // 홈 버튼
+            IconButton(
+              icon: const Icon(Icons.home_outlined),
+              onPressed: () {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
+            ),
+          ],
+        ),
+
+        // 아래 구분선
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(0.5),
+          child: Container(
+            height: 0.5,
+            color: Colors.black.withOpacity(0.2),
+          ),
+        ),
       ),
+
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 🔸 프리뷰 (항상 있음)
           Hero(
             tag: 'design-preview-${d.id ?? 'temp'}',
             child: Material(
@@ -44,15 +107,11 @@ class ConsultingPage extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: d.backgroundColor,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 2,
-                  ),
+                  border: Border.all(color: Colors.black, width: 2),
                 ),
                 child: Center(
                   child: Text(
                     d.text,
-                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: d.fontFamily,
                       color: d.fontColor,
@@ -64,59 +123,16 @@ class ConsultingPage extends StatelessWidget {
               ),
             ),
           ),
+
           const SizedBox(height: 8),
 
-          // 🔸 색/폰트 정보
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Text(
-              '${_colorToHex(d.backgroundColor)} · ${_colorToHex(d.fontColor)} · ${d.fontFamily}',
+              '${_colorToHex(d.backgroundColor)} · '
+                  '${_colorToHex(d.fontColor)} · '
+                  '${d.fontFamily}',
               style: const TextStyle(fontSize: 12, color: Colors.black54),
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // 🔸 go to design 버튼
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => DesignPage(design: d),
-                      transitionsBuilder: (_, animation, __, child) {
-                        // 🔥 왼쪽(-1)에서 가운데(0)로 → 왼쪽에서 오른쪽으로 들어오는 효과
-                        final tween = Tween<Offset>(
-                          begin: const Offset(-1.0, 0.0),
-                          end: Offset.zero,
-                        ).chain(
-                          CurveTween(curve: Curves.easeInOut),
-                        );
-                        return SlideTransition(
-                          position: animation.drive(tween),
-                          child: child,
-                        );
-                      },
-                    ),
-                  );
-                },
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.black, width: 1.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-                child: const Text(
-                  'Go to design',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
             ),
           ),
 
