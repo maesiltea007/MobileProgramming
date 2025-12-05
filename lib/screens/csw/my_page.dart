@@ -13,10 +13,10 @@ class MyPage extends StatelessWidget {
       body: Consumer<AppState>(
         builder: (context, appState, child) {
           if (appState.isLoggedIn) {
-            // 1. 로그인 했을 때
-            return _buildLoggedInPage(context, appState.currentNickname!);
+            // 🔥 닉네임이 null이면 기본값 'User'로 대체
+            final nickname = appState.currentNickname ?? 'User';
+            return _buildLoggedInPage(context, nickname);
           } else {
-            // 2. 로그인하지 않았을 때
             return _buildLoggedOutPage(context);
           }
         },

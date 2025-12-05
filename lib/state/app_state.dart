@@ -8,6 +8,7 @@ class AppState extends ChangeNotifier {
   String? currentUserId;
   String? currentNickname;
 
+
   Color mainColor = Colors.blueAccent;
   double fontSize = 20;
 
