@@ -1,3 +1,7 @@
+import 'package:epic_design_helper/screens/lji/widgets/design_page_widgets/color_hex_row.dart';
+import 'package:epic_design_helper/screens/lji/widgets/design_page_widgets/design_preview.dart';
+import 'package:epic_design_helper/screens/lji/widgets/design_page_widgets/save_options_popup.dart';
+import 'package:epic_design_helper/screens/lji/widgets/design_page_widgets/text_content_row.dart';
 import 'package:flutter/material.dart';
 import '../../models/design.dart';
 import '../../services/design_repository.dart';
@@ -74,19 +78,19 @@ class _DesignPageState extends State<DesignPage> {
           children: [
             const SizedBox(width: 12),
 
+            // go to library 버튼
             TextButton(
               onPressed: () {
                 Navigator.of(context).popUntil((route) => route.isFirst);
               },
               child: const Text(
                 'Go to library',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
             ),
             const Spacer(),
+
+            // consult it 버튼
             ElevatedButton(
               onPressed: () {
                 final current = Design(
@@ -128,12 +132,13 @@ class _DesignPageState extends State<DesignPage> {
           ],
         ),
 
-        // appBar / body 구분선
+        // divider
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(0.5),
           child: Container(height: 0.5, color: Colors.black.withOpacity(0.2)),
         ),
       ),
+
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
         child: Row(
@@ -161,7 +166,7 @@ class _DesignPageState extends State<DesignPage> {
 
             const SizedBox(width: 12),
 
-            // 채팅 버튼
+            // chatting icon button
             SizedBox(
               width: 54,
               height: 54,
@@ -176,7 +181,6 @@ class _DesignPageState extends State<DesignPage> {
                     ownerId: widget.design.ownerId,
                     createdAt: widget.design.createdAt,
                   );
-
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => ConsultingPage(design: current),
@@ -207,7 +211,7 @@ class _DesignPageState extends State<DesignPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildPreview(_backgroundColor, _fontColor, _fontFamily),
+            _buildPreview(_backgroundColor, _fontColor, _fontFamily, _text),
             const SizedBox(height: 32),
             _buildBackgroundColorRow(_backgroundColor),
             const SizedBox(height: 24),
@@ -223,12 +227,7 @@ class _DesignPageState extends State<DesignPage> {
   }
 
   void _saveDesign() {
-    // 로그인 체크
     final app = Provider.of<AppState>(context, listen: false);
-    if (!app.isLoggedIn) {
-      _showLoginRequiredDialog();
-      return;
-    }
     final id = generateDesignId();
     final updatedDesign = Design(
       text: _text,
@@ -245,57 +244,17 @@ class _DesignPageState extends State<DesignPage> {
     Navigator.pop(context);
   }
 
-  void _showLoginRequiredDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("로그인이 필요합니다"),
-          content: const Text("디자인을 저장하려면 로그인해주세요."),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("취소"),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // 먼저 팝업 닫고
-                Navigator.pushNamed(context, '/login'); // 로그인 페이지로 이동
-              },
-              child: const Text("로그인하기"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   // 상단 프리뷰 위젯
-  Widget _buildPreview(Color bg, Color fontColor, String fontFamily) {
+  Widget _buildPreview(Color bg, Color fontColor, String fontFamily, String text) {
     return Hero(
       tag: 'design-preview-${widget.design.id ?? 'temp'}',
       child: Material(
         color: Colors.transparent,
-        child: Container(
-          height: 200,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: bg,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.black, width: 2),
-          ),
-          child: Center(
-            child: Text(
-              _text,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: fontFamily,
-                color: fontColor,
-                fontSize: 48,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
+        child: DesignPreview(
+          backgroundColor: bg,
+          fontColor: fontColor,
+          fontFamily: fontFamily,
+          text: text,
         ),
       ),
     );
@@ -303,112 +262,37 @@ class _DesignPageState extends State<DesignPage> {
 
   // 배경색 선택 위젯
   Widget _buildBackgroundColorRow(Color bg) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          width: 72,
-          height: 72,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: bg,
-            border: Border.all(color: Colors.black, width: 2),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          // 🔥 남은 가로 전부 사용
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('background color', style: TextStyle(fontSize: 16)),
-              TextField(
-                controller: _bgHexController,
-                maxLength: 7,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-                decoration: const InputDecoration(
-                  isDense: true,
-                  counterText: '',
-                  contentPadding: EdgeInsets.only(top: 2),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(width: 1, color: Colors.black54),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(width: 1.2, color: Colors.black),
-                  ),
-                ),
-                onSubmitted: (value) {
-                  final c = _hexToColor(value);
-                  if (c != null) {
-                    setState(() {
-                      _backgroundColor = c;
-                      _bgHexController.text = _colorToHex(c);
-                    });
-                  }
-                },
-              ),
-            ],
-          ),
-        ),
-      ],
+    return ColorHexRow(
+      label: 'background color',
+      color: bg,
+      controller: _bgHexController,
+      onSubmitted: (value) {
+        final c = _hexToColor(value);
+        if (c != null) {
+          setState(() {
+            _backgroundColor = c;
+            _bgHexController.text = _colorToHex(c);
+          });
+        }
+      },
     );
   }
 
   // 폰트 컬러 선택 위젯
   Widget _buildFontColorRow(Color fontColor) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          width: 72,
-          height: 72,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: fontColor,
-            border: Border.all(color: Colors.black, width: 2),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('font color', style: TextStyle(fontSize: 16)),
-              TextField(
-                controller: _fontHexController,
-                maxLength: 7,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-                decoration: const InputDecoration(
-                  isDense: true,
-                  counterText: '',
-                  contentPadding: EdgeInsets.only(top: 2),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(width: 1, color: Colors.black54),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(width: 1.2, color: Colors.black),
-                  ),
-                ),
-                onSubmitted: (value) {
-                  final c = _hexToColor(value);
-                  if (c != null) {
-                    setState(() {
-                      _fontColor = c;
-                      _fontHexController.text = _colorToHex(c);
-                    });
-                  }
-                },
-              ),
-            ],
-          ),
-        ),
-      ],
+    return ColorHexRow(
+      label: 'font color',
+      color: fontColor,
+      controller: _fontHexController,
+      onSubmitted: (value) {
+        final c = _hexToColor(value);
+        if (c != null) {
+          setState(() {
+            _fontColor = c;
+            _fontHexController.text = _colorToHex(c);
+          });
+        }
+      },
     );
   }
 
@@ -442,44 +326,13 @@ class _DesignPageState extends State<DesignPage> {
 
   // 텍스트 콘텐츠 위젯
   Widget _buildTextRow() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const Text(
-          'Az',
-          style: TextStyle(fontSize: 40, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('text content', style: TextStyle(fontSize: 16)),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _textController,
-                onChanged: (value) {
-                  setState(() {
-                    _text = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey.shade300,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(6),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+    return TextContentRow(
+      controller: _textController,
+      onChanged: (value) {
+        setState(() {
+          _text = value;
+        });
+      },
     );
   }
 
@@ -488,62 +341,15 @@ class _DesignPageState extends State<DesignPage> {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text("Save Options"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _saveAsNew();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text(
-                    "Save as New",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _overwriteSave();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[800],
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text(
-                    "Overwrite",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: const Text("Cancel"),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
+        return SaveOptionsPopup(
+          onSaveAsNew: () {
+            Navigator.pop(context);
+            _saveAsNew();
+          },
+          onOverwrite: () {
+            Navigator.pop(context);
+            _overwriteSave();
+          },
         );
       },
     );
@@ -554,20 +360,28 @@ class _DesignPageState extends State<DesignPage> {
     return DateTime.now().millisecondsSinceEpoch.toString();
   }
 
-  // save as new
-  void _saveAsNew() {
-    final app = Provider.of<AppState>(context, listen: false);
-    if (!app.isLoggedIn) {
-      _showLoginRequiredDialog();
-      return;
-    }
-    final id = generateDesignId();
-    final updatedDesign = Design(
+  Design _buildCurrentDesign({
+    String? id,
+    required String ownerId,
+    required DateTime createdAt,
+  }) {
+    return Design(
       id: id,
       text: _text,
       fontFamily: _fontFamily,
       fontColor: _fontColor,
       backgroundColor: _backgroundColor,
+      ownerId: ownerId,
+      createdAt: createdAt,
+    );
+  }
+
+  // save as new
+  void _saveAsNew() {
+    final app = Provider.of<AppState>(context, listen: false);
+    final id = generateDesignId();
+    final updatedDesign = _buildCurrentDesign(
+      id: id,
       ownerId: app.currentUserId!,
       createdAt: DateTime.now(),
     );
@@ -578,25 +392,15 @@ class _DesignPageState extends State<DesignPage> {
   // overwrite 덮어쓰기
   void _overwriteSave() {
     final app = Provider.of<AppState>(context, listen: false);
-    if (!app.isLoggedIn) {
-      // 로그인 체크
-      _showLoginRequiredDialog();
-      return;
-    }
-    final existingId = widget.design.id; // 기존 디자인 ID
+    final existingId = widget.design.id;
     if (existingId == null) {
-      // id가 없으면 그냥 새로 저장
       _saveAsNew();
       return;
     }
-    final updatedDesign = Design(
+    final updatedDesign = _buildCurrentDesign(
       id: existingId,
-      text: _text,
-      fontFamily: _fontFamily,
-      fontColor: _fontColor,
-      backgroundColor: _backgroundColor,
-      ownerId: widget.design.ownerId, // 원래 주인 유지
-      createdAt: widget.design.createdAt, // 생성 시각 유지
+      ownerId: widget.design.ownerId,
+      createdAt: widget.design.createdAt,
     );
     DesignRepository.save(existingId, updatedDesign);
     Navigator.pop(context);
