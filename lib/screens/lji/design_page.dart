@@ -379,7 +379,7 @@ class _DesignPageState extends State<DesignPage> {
       createdAt: DateTime.now(),
     );
     DesignRepository.save(id, updatedDesign);
-    Navigator.pop(context);
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   // overwrite 덮어쓰기
@@ -396,7 +396,7 @@ class _DesignPageState extends State<DesignPage> {
       createdAt: widget.design.createdAt,
     );
     DesignRepository.save(existingId, updatedDesign);
-    Navigator.pop(context);
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   // 정말 삭제하시겠습니까 팝업
@@ -424,7 +424,7 @@ class _DesignPageState extends State<DesignPage> {
             ),
             TextButton(
               onPressed: () async {
-                Navigator.pop(context);
+                Navigator.of(context).popUntil((route) => route.isFirst);
                 await _deleteDesign(id);
               },
               child: const Text(
