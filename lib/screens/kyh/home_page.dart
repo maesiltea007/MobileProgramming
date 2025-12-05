@@ -5,6 +5,8 @@ import '../../state/app_state.dart';
 import '../../services/ranking_service.dart';
 import '../../services/design_repository.dart';
 import 'design_preview_box.dart';
+import '../../models/design.dart';
+
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -62,7 +64,7 @@ class HomePage extends StatelessWidget {
 
                   // 텍스트
                   Text(
-                    '명예의 전당',
+                    'Hall of Fame',
                     style: TextStyle(
                       fontSize: app.fontSize + 4,
                       fontWeight: FontWeight.bold,
@@ -82,18 +84,18 @@ class HomePage extends StatelessWidget {
 
 
             // -------------------------
-            // 🔥 1~3등 상단 고정 박스 (명예의 전당 스타일로 변경)
-            // -------------------------
+// 🔥 1~3등 상단 고정 박스 (높이 축소 버전)
+// -------------------------
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(12), // 16 → 12 (박스 여백 축소)
                 decoration: BoxDecoration(
-                  color: const Color(0xFFECECEC), // 밝은 회색
+                  color: const Color(0xFFECECEC),
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
                     color: const Color(0xFFDDDDDD),
-                    width: 2,
+                    width: 1.5, // 2 → 1.5
                   ),
                 ),
 
@@ -107,75 +109,94 @@ class HomePage extends StatelessWidget {
                     if (design == null) return const SizedBox.shrink();
 
                     return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: color.withOpacity(0.6),
+                              width: 1.5,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              )
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              // ---------------------------
+                              // 🔥 등수 아이콘 + #순위
+                              // ---------------------------
+                              Image.asset(
+                                trophyImage(rank),
+                                width: 26,
+                                height: 26,
+                              ),
+                              const SizedBox(width: 6),
 
-                        // 🔥 등수(좌) + 좋아요(우)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                // ⭐ 기존 Icon(Icons.emoji_events) 삭제하고 이미지로 교체
-                                Image.asset(
-                                  trophyImage(rank),
-                                  width: 32,
-                                  height: 32,
+                              Text(
+                                "#$rank",
+                                style: TextStyle(
+                                  fontSize: app.fontSize + 2,
+                                  fontWeight: FontWeight.bold,
+                                  color: color,
                                 ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  "$rank위",
-                                  style: TextStyle(
-                                    fontSize: app.fontSize + 3,
-                                    fontWeight: FontWeight.bold,
-                                    color: color,
+                              ),
+
+                              const SizedBox(width: 16),
+
+                              // ---------------------------
+                              // 🔥 좋아요 수
+                              // ---------------------------
+                              const Icon(
+                                  Icons.favorite, color: Colors.red, size: 20),
+                              const SizedBox(width: 4),
+
+                              Text(
+                                "${RankingService.getScore(entry.key)}",
+                                style: TextStyle(
+                                  fontSize: app.fontSize,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black,
+                                ),
+                              ),
+
+                              const SizedBox(width: 16),
+
+                              // ---------------------------
+                              // 🔥 미리보기 박스 (한 줄 오른쪽 공간을 전부 차지)
+                              // ---------------------------
+                              Expanded(
+                                child: Container(
+                                  height: 48, // 🔥 높이를 확 줄임
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: FittedBox(
+                                      fit: BoxFit.contain,
+                                      // 🔥 글자/레이아웃이 안 잘리고 축소됨
+                                      child: SizedBox(
+                                        width: 300, // 가로 기준 크기
+                                        child: MiniPreviewBox(design: design),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
 
-                            // 🔥 오른쪽 좋아요 수
-                            Row(
-                              children: [
-                                const Icon(Icons.favorite, color: Colors.red,
-                                    size: 20),
-                                const SizedBox(width: 4),
-                                Text(
-                                  "${RankingService.getScore(entry.key)}",
-                                  style: TextStyle(
-                                    fontSize: app.fontSize,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black, // ← 검정색으로 변경
-                                  ),
-                                ),
-
-                              ],
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
 
                         const SizedBox(height: 12),
-
-                        // 🔥 미리보기 카드
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: color.withOpacity(0.8),
-                              width: 1.2,
-                            ),
-                          ),
-                          child: DesignPreviewBox(design: design),
-                        ),
-
-                        if (i != top3.length - 1)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            child: Divider(
-                              color: Colors.white.withOpacity(0.3),
-                              thickness: 1,
-                            ),
-                          ),
                       ],
                     );
                   }),
@@ -206,69 +227,62 @@ class HomePage extends StatelessWidget {
                     elevation: 3,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(
-                        width: 2,
-                        color: color,
-                      ),
+                      side: BorderSide(width: 2, color: color),
                     ),
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Column(
+                      child: Row(
                         children: [
-
-                          // 디자인 미리보기
-                          DesignPreviewBox(design: design),
-
-                          const SizedBox(height: 12),
-
+                          // 🔥 등수 + 좋아요 나란히
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                children: [
-                                  Icon(Icons.emoji_events,
-                                      color: color, size: 22),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    "#$rank",
-                                    style: TextStyle(
-                                      fontSize: app.fontSize,
-                                      fontWeight: FontWeight.bold,
-                                      color: color,
-                                    ),
-                                  ),
-                                ],
+                              Icon(Icons.emoji_events, color: color, size: 22),
+                              const SizedBox(width: 4),
+                              Text(
+                                "#$rank",
+                                style: TextStyle(
+                                  fontSize: app.fontSize,
+                                  fontWeight: FontWeight.bold,
+                                  color: color,
+                                ),
                               ),
 
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.favorite,
-                                    color: const Color(0xFFE53935),
-                                    // 좀 더 입체감 있는 진한 레드
-                                    size: 22,
-                                    shadows: const [
-                                      Shadow(
-                                        color: Colors.black38,
-                                        blurRadius: 4,
-                                        offset: Offset(1, 1),
-                                      )
-                                    ],
-                                  ),
+                              const SizedBox(width: 12),
 
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    "${RankingService.getScore(entry.key)}",
-                                    style: TextStyle(
-                                      fontSize: app.fontSize,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
+                              const Icon(
+                                  Icons.favorite, color: Colors.red, size: 20),
+                              const SizedBox(width: 4),
+                              Text(
+                                "$score",
+                                style: TextStyle(
+                                  fontSize: app.fontSize,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-
                             ],
+                          ),
+
+                          const SizedBox(width: 16),
+
+                          // 🔥 미니 프리뷰
+                          Expanded(
+                            child: Container(
+                              height: 48,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: FittedBox(
+                                  fit: BoxFit.contain,
+                                  child: SizedBox(
+                                    width: 300,
+                                    child: MiniPreviewBox(design: design),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -279,6 +293,37 @@ class HomePage extends StatelessWidget {
             ),
 
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class MiniPreviewBox extends StatelessWidget {
+  final Design design;
+
+  const MiniPreviewBox({super.key, required this.design});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 48, // 🔥 원하는 높이
+      alignment: Alignment.center, // 텍스트 가운데
+      decoration: BoxDecoration(
+        color: design.backgroundColor, // 🔥 색이 꽉 차도록
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: Colors.black.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Text(
+        design.text,
+        style: TextStyle(
+          color: design.fontColor,
+          fontFamily: design.fontFamily,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

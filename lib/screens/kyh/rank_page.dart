@@ -146,11 +146,11 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
       backgroundColor: Colors.white,
 
       appBar: AppBar(
+        toolbarHeight: 0,
+        // 🔥 빈 공간 제거 핵심!!
         automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: Colors.white,
-        title: const SizedBox.shrink(),
-        // 제목 제거
 
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
@@ -169,8 +169,8 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
             ),
 
             tabs: const [
-              Tab(text: "전체 랭킹"),
-              Tab(text: "내 디자인"),
+              Tab(text: "All Designs"),
+              Tab(text: "My Designs"),
             ],
           ),
         ),
@@ -188,7 +188,7 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
           final list = snapshot.data as List<RankItem>;
 
           if (list.isEmpty) {
-            return const Center(child: Text("표시할 디자인이 없습니다."));
+            return const Center(child: Text("No designs to display."));
           }
 
           return ListView.builder(
