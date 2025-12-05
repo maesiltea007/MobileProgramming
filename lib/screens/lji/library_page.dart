@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../models/design.dart';
-import '../../data/saved_designs.dart';
 import 'design_page.dart';
 import 'package:provider/provider.dart';
 import '../../state/app_state.dart';
@@ -16,6 +15,7 @@ class DesignCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: design.backgroundColor,
+        borderRadius: BorderRadius.circular(4),
         border: Border.all(color: Colors.grey.shade400, width: 1.5),
       ),
       child: Center(
@@ -34,6 +34,65 @@ class DesignCard extends StatelessWidget {
   }
 }
 
+// create new 카드 위젯
+class CreateNewCard extends StatelessWidget {
+  const CreateNewCard({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(
+          color: Colors.grey.shade400,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.black,
+                width: 2,
+              ),
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.add,
+                size: 28,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Create New',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
 class LibraryPage extends StatelessWidget {
   const LibraryPage({super.key});
 
@@ -48,7 +107,6 @@ class LibraryPage extends StatelessWidget {
       child: ValueListenableBuilder(
         valueListenable: designsBox.listenable(),   // hive 변경되면 페이지 새로고침
         builder: (context, Box box, _) {
-          // 1) Hive → Design 리스트 변환
           final List<Design> hiveDesigns = box.keys.map<Design>((key) {
             final raw = box.get(key);
 
@@ -56,9 +114,7 @@ class LibraryPage extends StatelessWidget {
               final map = Map<String, dynamic>.from(raw as Map);
               return Design.fromMap(map);
             }
-
-            // 혹시 데이터가 이상하면 기본값 하나
-            return Design(
+            return Design( // 이상한 상황에 보여줄 데이터
               id: null,
               text: '',
               fontFamily: 'Arial',
@@ -69,8 +125,7 @@ class LibraryPage extends StatelessWidget {
             );
           }).toList();
 
-          // 2) Hive에 아무것도 없으면 기존 더미데이터 사용
-          final List<Design> designs = (hiveDesigns.isNotEmpty ? hiveDesigns : UserDesigns)
+          final List<Design> designs = hiveDesigns
               .where((d) => d.ownerId == currentUserId) // ownerId 필터
               .toList();
 
@@ -85,9 +140,34 @@ class LibraryPage extends StatelessWidget {
               crossAxisSpacing: 8,
               childAspectRatio: 1,
             ),
-            itemCount: designs.length,
+            itemCount: designs.length + 1,
             itemBuilder: (context, index) {
-              final design = designs[index];
+              if (index == 0) {
+                return GestureDetector(
+                  onTap: () {
+                    final newDesign = Design(
+                      id: null,
+                      text: 'hello',
+                      fontFamily: 'Arial',
+                      fontColor: Colors.white,
+                      backgroundColor: Colors.black,
+                      ownerId: 'new',
+                      createdAt: DateTime.now(),
+                    );
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        pageBuilder: (_, __, ___) => DesignPage(design: newDesign),
+                        transitionDuration: Duration.zero,
+                        reverseTransitionDuration: Duration.zero,
+                        transitionsBuilder: (_, __, ___, child) => child,
+                      ),
+                    );
+                  },
+                  child: const CreateNewCard(),
+                );
+              }
+
+              final design = designs[index - 1];
               return GestureDetector(
                 onTap: () {
                   Navigator.of(context).push(

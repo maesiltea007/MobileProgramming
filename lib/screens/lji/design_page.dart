@@ -170,7 +170,7 @@ class _DesignPageState extends State<DesignPage> {
               width: 54,
               height: 54,
               child: GestureDetector(
-                onTap: _showDeleteConfirmDialog, // 🔥 기능 추가
+                onTap: _showDeleteConfirmDialog,
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.black,
@@ -327,6 +327,10 @@ class _DesignPageState extends State<DesignPage> {
 
   // 팝업창 "overwrite" or "save as new"
   void _showSaveOptions() {
+    if (widget.design.ownerId == 'new') { // 새 디자인 생성인 경우에는 save as new
+      _saveAsNew();
+      return;
+    }
     showDialog(
       context: context,
       builder: (context) {
@@ -397,12 +401,16 @@ class _DesignPageState extends State<DesignPage> {
 
   // 정말 삭제하시겠습니까 팝업
   void _showDeleteConfirmDialog() {
+    if (widget.design.ownerId == 'new') { // 새 디자인이면 팝업 안 띄움
+      Navigator.of(context).pop();
+      return;
+    };
+
     final id = widget.design.id;
     if (id == null) {
       Navigator.of(context).pop();
       return;
-    } // 아직 저장 안 된 디자인이라면 그냥 페이지만 닫기
-
+    }
     showDialog(
       context: context,
       builder: (context) {
