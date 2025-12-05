@@ -9,7 +9,6 @@ import '../../services/ranking_service.dart';
 import 'package:provider/provider.dart';
 import '../../state/app_state.dart';
 import 'consulting_page.dart';
-import 'library_page.dart';
 
 class DesignPage extends StatefulWidget {
   final Design design;
@@ -166,27 +165,12 @@ class _DesignPageState extends State<DesignPage> {
 
             const SizedBox(width: 12),
 
-            // chatting icon button
+            // delete icon button
             SizedBox(
               width: 54,
               height: 54,
               child: GestureDetector(
-                onTap: () {
-                  final current = Design(
-                    id: widget.design.id,
-                    text: _text,
-                    fontFamily: _fontFamily,
-                    fontColor: _fontColor,
-                    backgroundColor: _backgroundColor,
-                    ownerId: widget.design.ownerId,
-                    createdAt: widget.design.createdAt,
-                  );
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => ConsultingPage(design: current),
-                    ),
-                  );
-                },
+                onTap: _showDeleteConfirmDialog, // 🔥 기능 추가
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.black,
@@ -199,13 +183,18 @@ class _DesignPageState extends State<DesignPage> {
                       ),
                     ],
                   ),
-                  child: const Icon(Icons.chat, color: Colors.white, size: 22),
+                  child: const Icon(
+                    Icons.delete_forever,
+                    color: Colors.red,
+                    size: 22,
+                  ),
                 ),
               ),
             ),
           ],
         ),
       ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -404,5 +393,45 @@ class _DesignPageState extends State<DesignPage> {
     );
     DesignRepository.save(existingId, updatedDesign);
     Navigator.pop(context);
+  }
+
+  // 정말 삭제하시겠습니까 팝업
+  void _showDeleteConfirmDialog() {
+    final id = widget.design.id;
+    if (id == null) {
+      Navigator.of(context).pop();
+      return;
+    } // 아직 저장 안 된 디자인이라면 그냥 페이지만 닫기
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete design'),
+          content: const Text('sure you want to delete this design?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                await _deleteDesign(id);
+              },
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteDesign(String id) async {
+    DesignRepository.delete(id);
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 }

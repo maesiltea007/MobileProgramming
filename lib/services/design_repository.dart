@@ -10,6 +10,10 @@ class DesignRepository {
     _box.put(id, design.toMap());
   }
 
+  static void delete(String id) {
+    _box.delete(id);
+  }
+
   static Design? get(String id) {
     final data = _box.get(id);
     if (data == null) return null;
