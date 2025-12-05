@@ -64,8 +64,12 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
     // 2) 최신(createdAt) 순으로 정렬
     designs.sort((a, b) => b.value.createdAt.compareTo(a.value.createdAt));
 
+    final rankingBox = RankingService.rankingBox;
+
     // 3) RankItem 리스트로 변환
-    return designs.map((entry) {
+    return designs
+        .where((entry) => rankingBox.containsKey(entry.key)) // 🔥 랭킹 등록된 것만 표시
+        .map((entry) {
       final id = entry.key;
       final d = entry.value;
 
@@ -83,25 +87,35 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
   // 내가 올린 디자인 랭킹 불러오기 (+ 전체 등수 계산)
   // -------------------------------------------------------------------------
   Future<List<RankItem>> _loadMyRanking() async {
-    final all = await _loadRanking();
+    final box = DesignRepository.box;
+    final rankingBox = RankingService.rankingBox;
+
     final myId = Provider
         .of<AppState>(context, listen: false)
         .currentUserId;
 
     final mine = <RankItem>[];
 
-    for (final item in all) {
-      if (item.design.ownerId == myId) {
-        mine.add(
-          RankItem(
-            id: item.id,
-            design: item.design,
-            score: item.score,
-            isLiked: item.isLiked,
-            rank: RankingService.getOverallRank(item.id), // 🔥 전체 기준 등수
-          ),
-        );
-      }
+    for (var key in box.keys) {
+      if (!rankingBox.containsKey(key)) continue; // 🔥 랭킹 등록된 디자인만 처리
+
+      final raw = box.get(key);
+      if (raw is! Map) continue;
+
+      final map = Map<String, dynamic>.from(raw);
+      final design = Design.fromMap(map);
+
+      if (design.ownerId != myId) continue; // 🔥 내 디자인이 아니면 제외
+
+      mine.add(
+        RankItem(
+          id: key.toString(),
+          design: design,
+          score: RankingService.getScore(key.toString()),
+          isLiked: RankingService.isLiked(key.toString()),
+          rank: RankingService.getOverallRank(key.toString()),
+        ),
+      );
     }
 
     return mine;

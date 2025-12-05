@@ -12,13 +12,6 @@ class AppState extends ChangeNotifier {
   Color mainColor = Colors.blueAccent;
   double fontSize = 20;
 
-  // 🔥 테스트용 임시 로그인 (Firebase Auth 붙어도 영향 없음)
-  void devLogin() {
-    isLoggedIn = true;
-    currentUserId = "dev-test-user"; // Firebase의 uid 역활
-    notifyListeners();
-  }
-
   // 로그인 실행
   void login(String userId, String nickname) {
     currentUserId = userId;
