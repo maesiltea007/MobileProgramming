@@ -32,15 +32,21 @@ class Design {
       };
 
   factory Design.fromMap(Map<String, dynamic> map) {
+    final createdAtStr = map["createdAt"] as String?;
+
     return Design(
-      id: map["id"],
-      text: map["text"],
-      fontFamily: map["fontFamily"],
-      fontColor: Color(map["fontColor"]),
-      backgroundColor: Color(map["backgroundColor"]),
-      ownerId: map["ownerId"],
-      createdAt: DateTime.parse(map["createdAt"]),
+      id: map["id"] as String?,
+      text: (map["text"] as String?) ?? '',
+      fontFamily: (map["fontFamily"] as String?) ?? 'Arial',
+      fontColor: Color((map["fontColor"] as int?) ?? Colors.black.value),
+      backgroundColor:
+      Color((map["backgroundColor"] as int?) ?? Colors.white.value),
+      ownerId: (map["ownerId"] as String?) ?? '',
+      createdAt: createdAtStr != null
+          ? DateTime.parse(createdAtStr)
+          : DateTime.now(), // createdAt 없으면 현재 시간으로
     );
   }
+
 }
 

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'package:hive/hive.dart';
 import '../../models/design.dart';
+import 'package:provider/provider.dart';
+import '../../state/app_state.dart';
 
 class ColorPickerPage extends StatefulWidget {
   final String imagePath;
@@ -53,13 +55,7 @@ class _ColorPickerPageState extends State<ColorPickerPage> {
       },
     );
   }
-  String? _getCurrentUserId() {
-    // TODO: 너네 로그인 시스템에 맞게 구현해야 되는 부분
-    // 예: Hive.box('userbox').get('currentUserId') 등등
-    // 지금은 테스트용으로 고정 ID를 반환해 두고, 나중에 실제 값으로 바꿔도 됨
-    // return Hive.box('userbox').get('currentUserId') as String?;
-    return 'dummy-user-1'; // 테스트용
-  }
+
 
   Future<void> _loadImage() async {
     final bytes = await File(widget.imagePath).readAsBytes();
@@ -77,23 +73,20 @@ class _ColorPickerPageState extends State<ColorPickerPage> {
     final rankingBox = Hive.box('rankingbox');
     final likesBox = Hive.box('likesbox');
 
-    // 🔑 고유 키 생성
-    final String designId = 'd_${DateTime.now().millisecondsSinceEpoch}';
+    final now = DateTime.now();
+    final String designId = 'd_${now.millisecondsSinceEpoch}';
 
-    // 🔥 Design 객체 하나 생성
     final design = Design(
-      text: 'Picked Color',          // 필요하면 나중에 수정 가능
-      fontFamily: 'Arial',           // 기본 폰트
-      fontColor: Colors.black,       // 글자색
-      backgroundColor: _selectedColor, // 🔥 컬러피커에서 고른 색
+      id: designId,
+      text: 'Picked Color',
+      fontFamily: 'Arial',
+      fontColor: Colors.black,
+      backgroundColor: _selectedColor,
       ownerId: userId,
-      createdAt: DateTime.now(),
+      createdAt: now,
     );
 
-    // Hive에 Map 형태로 저장
     designsBox.put(designId, design.toMap());
-
-    // 랭킹 / 좋아요 초기값
     rankingBox.put(designId, 0);
     likesBox.put(designId, false);
 
@@ -101,6 +94,7 @@ class _ColorPickerPageState extends State<ColorPickerPage> {
       const SnackBar(content: Text('컬러가 저장되었습니다.')),
     );
   }
+
 
 
   void _updateColorFromPosition() {
@@ -293,18 +287,22 @@ class _ColorPickerPageState extends State<ColorPickerPage> {
                     height: 32,
                     child: ElevatedButton(
                       onPressed: () async {
-                        // 1) 로그인된 유저 ID 가져오기
-                        final userId = _getCurrentUserId();
+                        // Provider에서 현재 로그인한 유저 ID 가져오기
+                        final appState = Provider.of<AppState>(context, listen: false);
+                        final userId = appState.currentUserId;
 
-                        // 2) 로그인 안 되어 있으면 팝업만 띄우고 리턴
                         if (userId == null) {
                           _showLoginRequiredDialog();
                           return;
                         }
 
-                        // 3) 로그인 되어 있으면 Hive에 저장
                         await _saveColorToHive(userId);
+
+                        // 👉 원하면 저장 후 라이브러리로 바로 이동
+                        if (!mounted) return;
+                        Navigator.pushNamed(context, '/library');
                       },
+
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.black87,

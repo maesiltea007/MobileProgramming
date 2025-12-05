@@ -3,6 +3,9 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
+import '../../state/app_state.dart';
+import '../../models/design.dart';
 
 class ScanPage extends StatefulWidget {
   final VoidCallback? onBackToHome;
@@ -133,17 +136,20 @@ class _ScanPageState extends State<ScanPage> {
     final rankingBox = Hive.box('rankingbox');
     final likesBox = Hive.box('likesbox');
 
-    final String designId = 'd_${DateTime.now().millisecondsSinceEpoch}';
+    final now = DateTime.now();
+    final String designId = 'd_${now.millisecondsSinceEpoch}';
 
-    final design = {
-      "text": "Picked Color",
-      "fontFamily": "Arial",
-      "fontColor": Colors.black.value,
-      "backgroundColor": _selectedColor.value,
-      "ownerId": userId,
-    };
+    final design = Design(
+      id: designId,
+      text: 'Picked Color',
+      fontFamily: 'Arial',
+      fontColor: Colors.black,
+      backgroundColor: _selectedColor,
+      ownerId: userId,
+      createdAt: now,
+    );
 
-    designsBox.put(designId, design);
+    designsBox.put(designId, design.toMap());
     rankingBox.put(designId, 0);
     likesBox.put(designId, false);
 
@@ -151,6 +157,7 @@ class _ScanPageState extends State<ScanPage> {
       const SnackBar(content: Text("컬러가 저장되었습니다.")),
     );
   }
+
 
   @override
   void dispose() {
@@ -354,7 +361,8 @@ class _ScanPageState extends State<ScanPage> {
                       height: 32,
                       child: ElevatedButton(
                         onPressed: () async {
-                          final userId = _getCurrentUserId();
+                          final appState = Provider.of<AppState>(context, listen: false);
+                          final userId = appState.currentUserId; // 로그인한 Firebase uid
 
                           if (userId == null) {
                             _showLoginRequiredDialog();
@@ -366,6 +374,7 @@ class _ScanPageState extends State<ScanPage> {
                           if (!mounted) return;
                           Navigator.pushNamed(context, '/library');
                         },
+
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: Colors.black87,
