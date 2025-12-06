@@ -1,3 +1,4 @@
+import 'package:epic_design_helper/services/ai_consulting_services/ai_consulting_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -22,6 +23,8 @@ const bool DEV_AUTO_LOGIN = true; // 임시로그인
 Future<void> main() async {
   // ★ 플러그인(camera) 사용 전에 반드시 초기화
   WidgetsFlutterBinding.ensureInitialized();
+
+  await AIConsultingService.loadApiKey(); // ai api 연결
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

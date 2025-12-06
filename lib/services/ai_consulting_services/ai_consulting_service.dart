@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
-import 'package:flutter/foundation.dart';                    // 🔹 debugPrint 위해
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import '../../models/chat_message.dart';
@@ -8,8 +9,18 @@ import '../../models/chat_thread.dart';
 import '../../models/design.dart';
 
 class AIConsultingService {
-  // ⚠️ 절대 깃헙에 올리지 말 것
-  static const String _apiKey = "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";
+
+  static String? _apiKey;
+  static Future<void> loadApiKey() async {
+    String raw = await rootBundle.loadString('assets/api_key.txt');
+    raw = raw
+        .replaceAll('\uFEFF', '')
+        .replaceAll('\r', '')
+        .replaceAll('\n', '')
+        .trim();
+    _apiKey = raw;
+    print("Loaded API KEY: '${_apiKey}'");
+  }
   static const String _endpoint = "https://openrouter.ai/api/v1/chat/completions";
   static const String _model = "tngtech/deepseek-r1t2-chimera:free";
 
@@ -35,7 +46,7 @@ class AIConsultingService {
         Uri.parse(_endpoint),
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer $_apiKey",
+          "Authorization": "Bearer ${_apiKey}",
           "HTTP-Referer": "https://github.com/maesiltea007/MobileProgramming",
           "X-Title": "Epic Design Helper",
         },

@@ -4,17 +4,15 @@ import 'package:provider/provider.dart';
 import '../../models/design.dart';
 import 'design_page.dart';
 
-import '../../models/chat_message.dart'; // 👉 CHATS: 채팅 메시지 모델
-import '../../state/app_state.dart'; // 👉 CHATS: userId 가져오기
-import '../../../services/ai_consulting_services/ai_consulting_service.dart'; // 👉 CHATS: OpenRouter 호출
-import '../../../services/ai_consulting_services/chat_repository.dart'; // 👉 CHATS: Hive 저장소
+import '../../models/chat_message.dart';
+import '../../state/app_state.dart';
+import '../../../services/ai_consulting_services/ai_consulting_service.dart';
+import '../../../services/ai_consulting_services/chat_repository.dart';
 
-import 'widgets/consulting_page_widgets/chat_input_bar.dart'; // 👉 CHATS: 입력바 위젯
-import 'widgets/consulting_page_widgets/message_bubble.dart'; // 👉 CHATS: 말풍선 위젯
-import 'widgets/consulting_page_widgets/typing_indicator_bubble.dart'; // 👉 CHATS: ... 타이핑 인디케이터
+import 'widgets/consulting_page_widgets/chat_input_bar.dart';
+import 'widgets/consulting_page_widgets/message_bubble.dart';
+import 'widgets/consulting_page_widgets/typing_indicator_bubble.dart';
 
-// 🔄 기존: class ConsultingPage extends StatelessWidget
-//    → 채팅 상태를 관리해야 하니까 StatefulWidget 으로 변경
 class ConsultingPage extends StatefulWidget {
   final Design? design;
 
@@ -25,29 +23,22 @@ class ConsultingPage extends StatefulWidget {
 }
 
 class _ConsultingPageState extends State<ConsultingPage> {
-  // 👉 CHATS: 실제로 화면에서 사용할 Design 인스턴스
   late Design _design;
 
-  // 👉 CHATS: 채팅방 식별용 키 (userId + designId)
   late String _userId;
   late String _designId;
 
-  // 👉 CHATS: 채팅 메시지 리스트
   final List<ChatMessage> _messages = [];
 
-  // 👉 CHATS: 입력창 컨트롤러
   final TextEditingController _inputController = TextEditingController();
 
-  // 👉 CHATS: AI가 답을 생성하는 중인지 여부
   bool _isProcessing = false;
 
-  // 👉 CHATS: didChangeDependencies에서 한 번만 초기화하기 위한 플래그
   bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
-    // 🔄 기존: build 안에서 d = design ?? ... 하던 부분을 여기로 이동
     _design =
         widget.design ??
         Design(
@@ -134,7 +125,7 @@ class _ConsultingPageState extends State<ConsultingPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 🔄 기존: final d = design ?? ... → initState에서 _design 세팅 후 여기서는 그대로 사용
+
     final d = _design;
 
     return Scaffold(
@@ -145,9 +136,12 @@ class _ConsultingPageState extends State<ConsultingPage> {
           children: [
             const SizedBox(width: 12),
 
-            // 🔥 여기부터 AppBar 영역은 너 코드 그대로 (UI/기능 변경 없음)
+            // Design it 버튼
             ElevatedButton(
-              onPressed: () {
+              // 🔥 변경점: AI가 답변 생성 중이면 버튼 비활성화
+              onPressed: _isProcessing
+                  ? null                              // 비활성화
+                  : () {
                 Navigator.of(context).push(
                   PageRouteBuilder(
                     pageBuilder: (_, __, ___) => DesignPage(design: d),
@@ -185,17 +179,16 @@ class _ConsultingPageState extends State<ConsultingPage> {
 
             const Spacer(),
 
-            IconButton(
-              icon: const Icon(Icons.home_outlined),
-              onPressed: () {
-                Navigator.of(context).popUntil((route) => route.isFirst);
-              },
-            ),
+            // 🔥 변경점: 홈 아이콘 완전히 제거
+            // (여기 있던 IconButton(Icons.home_outlined, ...) 블록 삭제)
           ],
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(0.5),
-          child: Container(height: 0.5, color: Colors.black.withOpacity(0.2)),
+          child: Container(
+            height: 0.5,
+            color: Colors.black.withOpacity(0.2),
+          ),
         ),
       ),
 

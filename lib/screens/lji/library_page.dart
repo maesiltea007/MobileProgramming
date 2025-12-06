@@ -129,10 +129,6 @@ class LibraryPage extends StatelessWidget {
               .where((d) => d.ownerId == currentUserId) // ownerId 필터
               .toList();
 
-          print('currentUserId = $currentUserId');
-          print('hiveDesigns length = ${hiveDesigns.length}');
-          print('filtered designs length = ${designs.length}');
-
           return GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
