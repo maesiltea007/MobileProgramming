@@ -32,6 +32,7 @@ Future<void> main() async {
   await Hive.openBox('designsbox');
   await Hive.openBox('rankingbox');
   await Hive.openBox('likesbox');
+  await Hive.openBox('chatbox');
 
   // 더미 데이터 삽입 (개발 모드에서만 실행)
   insertDummyData();

@@ -1,0 +1,127 @@
+import 'dart:convert';
+import 'dart:ui';
+import 'package:flutter/foundation.dart';                    // 🔹 debugPrint 위해
+import 'package:http/http.dart' as http;
+
+import '../../models/chat_message.dart';
+import '../../models/chat_thread.dart';
+import '../../models/design.dart';
+
+class AIConsultingService {
+  // ⚠️ 절대 깃헙에 올리지 말 것
+  static const String _apiKey = "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";
+  static const String _endpoint = "https://openrouter.ai/api/v1/chat/completions";
+  static const String _model = "tngtech/deepseek-r1t2-chimera:free";
+
+  /// 디자인 + 기존 히스토리 + 새 메시지 → AI 응답 텍스트
+  /// 실패해도 예외를 던지지 않고, "에러 안내 문장"을 그대로 리턴한다.
+  static Future<String> consult({
+    required Design design,
+    required List<ChatMessage> history,
+    required String userMessage,
+  }) async {
+    // 최근 10개만 사용해서 토큰 절약
+    final trimmedHistory =
+    history.length > 10 ? history.sublist(history.length - 10) : history;
+
+    final messages = _buildMessages(
+      design: design,
+      history: trimmedHistory,
+      newUserMessage: userMessage,
+    );
+
+    try {
+      final response = await http.post(
+        Uri.parse(_endpoint),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $_apiKey",
+          "HTTP-Referer": "https://github.com/maesiltea007/MobileProgramming",
+          "X-Title": "Epic Design Helper",
+        },
+        body: jsonEncode({
+          "model": _model,
+          "messages": messages,
+        }),
+      );
+
+      // 1) HTTP 상태코드 체크
+      if (response.statusCode != 200) {
+        debugPrint('🔥 AI HTTP error: ${response.statusCode}');
+        debugPrint('🔥 body: ${response.body}');
+        return 'I had trouble contacting the design AI. Please try again in a moment.';
+      }
+
+      // 2) JSON 파싱
+      final data = jsonDecode(response.body);
+      final choices = data['choices'];
+      if (choices is! List || choices.isEmpty) {
+        debugPrint('🔥 Unexpected AI response: $data');
+        return 'The AI returned an unexpected response.';
+      }
+
+      final message = choices[0]['message'];
+      final content = message?['content'];
+      if (content is! String) {
+        debugPrint('🔥 Unexpected AI message format: $message');
+        return 'The AI response format was invalid.';
+      }
+
+      return content;
+    } catch (e, st) {
+      // 3) 네트워크/파싱 등 모든 예외 로그
+      debugPrint('🔥 AIConsultingService.consult error: $e');
+      debugPrint('🔥 stack: $st');
+      return 'A technical error occurred while generating feedback. Please try again.';
+    }
+  }
+
+  // system + history + userMessage
+  static List<Map<String, dynamic>> _buildMessages({
+    required Design design,
+    required List<ChatMessage> history,
+    required String newUserMessage,
+  }) {
+    final List<Map<String, dynamic>> msgs = [];
+
+    // 1. ChatBot settings
+    msgs.add({
+      "role": "system",
+      "content": """
+You are an AI design consultant.
+
+Current design:
+- Background: ${_colorToHex(design.backgroundColor)}
+- Font color: ${_colorToHex(design.fontColor)}
+- Font family: ${design.fontFamily}
+- Text: "${design.text}"
+
+- Do NOT describe your reasoning process.
+- Do NOT say things like "first I will analyze" or "the user probably wants".
+- Just give direct, concise feedback to the user.
+- Use at most 3 short paragraphs.
+""",
+    });
+
+    // 2. past chatting history
+    for (final msg in history) {
+      msgs.add({
+        "role": msg.isUser ? "user" : "assistant",
+        "content": msg.text,
+      });
+    }
+
+    // 3. given message
+    msgs.add({
+      "role": "user",
+      "content": newUserMessage,
+    });
+
+    return msgs;
+  }
+
+  static String _colorToHex(Color color) {
+    final v = color.value.toRadixString(16).padLeft(8, '0');
+    return '#${v.substring(2).toUpperCase()}';
+  }
+}
