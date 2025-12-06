@@ -36,19 +36,19 @@ class _ColorPickerPageState extends State<ColorPickerPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("로그인이 필요합니다"),
-          content: const Text("디자인을 저장하려면 로그인해주세요."),
+          title: const Text("Login is required."),
+          content: const Text("Please log in to save your design."),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("취소"),
+              child: const Text("Cancel"),
             ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context); // 먼저 팝업 닫고
                 Navigator.pushNamed(context, '/login'); // 로그인 페이지로 이동
               },
-              child: const Text("로그인하기"),
+              child: const Text("Log In"),
             ),
           ],
         );
@@ -91,7 +91,7 @@ class _ColorPickerPageState extends State<ColorPickerPage> {
     likesBox.put(designId, false);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('컬러가 저장되었습니다.')),
+      const SnackBar(content: Text('The color has been saved.')),
     );
   }
 

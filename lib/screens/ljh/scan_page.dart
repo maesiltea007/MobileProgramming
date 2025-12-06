@@ -44,19 +44,19 @@ class _ScanPageState extends State<ScanPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("로그인이 필요합니다"),
-          content: const Text("디자인을 저장하려면 로그인해주세요."),
+          title: const Text("Login is required."),
+          content: const Text("Please log in to save your design."),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("취소"),
+              child: const Text("Cancel"),
             ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/login');
               },
-              child: const Text("로그인하기"),
+              child: const Text("Log in"),
             ),
           ],
         );
@@ -72,8 +72,8 @@ class _ScanPageState extends State<ScanPage> {
   Future<void> _initCamera() async {
     if (kIsWeb) {
       setState(() {
-        _error = '웹(Chrome)에서는 camera 패키지가 동작하지 않습니다.\n'
-            '안드로이드 기기에서 실행해 주세요.';
+        _error = 'The camera package does not work on web (Chrome).\n'
+            'Please run this on an Android device.';
       });
       return;
     }
@@ -81,7 +81,7 @@ class _ScanPageState extends State<ScanPage> {
     try {
       final cameras = await availableCameras();
       if (cameras.isEmpty) {
-        setState(() => _error = '사용 가능한 카메라가 없습니다.');
+        setState(() => _error = 'No available cameras.');
         return;
       }
 
@@ -105,7 +105,7 @@ class _ScanPageState extends State<ScanPage> {
 
       setState(() {});
     } catch (e) {
-      setState(() => _error = '카메라 초기화 실패: $e');
+      setState(() => _error = 'Camera initialization failed: $e');
     }
   }
 
@@ -154,7 +154,7 @@ class _ScanPageState extends State<ScanPage> {
     likesBox.put(designId, false);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("컬러가 저장되었습니다.")),
+      const SnackBar(content: Text("The color has been saved.")),
     );
   }
 

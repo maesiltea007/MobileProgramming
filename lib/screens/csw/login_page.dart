@@ -94,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${nickname}님 환영합니다!')),
+            SnackBar(content: Text('${nickname} Welcome!')),
           );
           Navigator.pop(context);
         }
@@ -102,14 +102,14 @@ class _LoginPageState extends State<LoginPage> {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found' || e.code == 'invalid-email') {
         setState(() {
-          _emailErrorText = '등록되지 않은 이메일이거나 형식이 올바르지 않습니다.';
+          _emailErrorText = 'The email is either not registered or invalid.';
         });
       } else if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
         setState(() {
-          _passwordErrorText = '비밀번호가 일치하지 않습니다.';
+          _passwordErrorText = 'The passwords do not match.';
         });
       } else {
-        String errorMessage = '로그인 오류: ${e.message}';
+        String errorMessage = 'Login Failed: ${e.message}';
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(errorMessage)),
@@ -122,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('알 수 없는 오류가 발생했습니다.')),
+          const SnackBar(content: Text('An unknown error has occurred.')),
         );
       }
     }
@@ -181,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                     validator: (value) {
                       if (_emailErrorText != null) return null;
                       if (value == null || value.isEmpty) {
-                        return '이메일을 입력해주세요.';
+                        return 'Please enter your email.';
                       }
                       return null;
                     },
@@ -209,7 +209,7 @@ class _LoginPageState extends State<LoginPage> {
                     validator: (value) {
                       if (_passwordErrorText != null) return null;
                       if (value == null || value.isEmpty) {
-                        return '비밀번호를 입력해주세요.';
+                        return 'Please enter your password.';
                       }
                       return null;
                     },

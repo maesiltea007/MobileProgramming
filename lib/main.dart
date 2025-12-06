@@ -93,10 +93,10 @@ class _MainNavigatorState extends State<MainNavigator> {
   ];
 
   final List<String> _titles = [
-    '홈',
-    '랭크',
-    '스캔',
-    '라이브러리',
+    'HOME',
+    'RANK',
+    'SCAN',
+    'LIBRARY',
   ];
 
   void _onItemTapped(int index) => setState(() => _selectedIndex = index);
@@ -119,10 +119,10 @@ class _MainNavigatorState extends State<MainNavigator> {
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
-          BottomNavigationBarItem(icon: Icon(Icons.star), label: '랭크'),
-          BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: '스캔'),
-          BottomNavigationBarItem(icon: Icon(Icons.library_books), label: '라이브러리'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'HOME'),
+          BottomNavigationBarItem(icon: Icon(Icons.star), label: 'RANK'),
+          BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: 'SCAN'),
+          BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'LIBRARY'),
         ],
       ),
     );

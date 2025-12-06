@@ -153,7 +153,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
       if (nicknameCheck.docs.isNotEmpty) {
         setState(() {
-          _nicknameErrorText = '이미 사용 중인 닉네임입니다.';
+          _nicknameErrorText = 'The nickname is already taken.';
         });
         return; // 중복이므로 중단
       }
@@ -180,7 +180,7 @@ class _SignUpPageState extends State<SignUpPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('회원가입 및 로그인 성공!')),
+            const SnackBar(content: Text('Registration and login successful!')),
           );
           Navigator.popUntil(context, ModalRoute.withName('/'));
         }
@@ -189,15 +189,15 @@ class _SignUpPageState extends State<SignUpPage> {
       if (e.code == 'weak-password') {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('비밀번호가 너무 약합니다. (6자 이상)')),
+            const SnackBar(content: Text('The password is too weak. It must be at least 6 characters long.')),
           );
         }
       } else if (e.code == 'email-already-in-use') {
         setState(() {
-          _emailErrorText = '이미 사용 중인 이메일입니다.';
+          _emailErrorText = 'This email is already taken.';
         });
       } else {
-        String errorMessage = '오류: ${e.message}';
+        String errorMessage = 'Error: ${e.message}';
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(errorMessage)),
@@ -207,7 +207,7 @@ class _SignUpPageState extends State<SignUpPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('알 수 없는 오류가 발생했습니다.')),
+          SnackBar(content: Text('An unexpected error has occurred.')),
         );
       }
     }
@@ -239,10 +239,10 @@ class _SignUpPageState extends State<SignUpPage> {
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return '이메일을 입력해 주세요.';
+                      return 'Please enter your email.';
                     }
                     if (!value.contains('@') || !value.contains('.')) {
-                      return '유효한 이메일 형식이 아닙니다.';
+                      return 'This is not a valid email address.';
                     }
                     return null;
                   },
@@ -256,10 +256,10 @@ class _SignUpPageState extends State<SignUpPage> {
                   controller: _nicknameController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return '닉네임을 입력해 주세요.';
+                      return 'Please enter your Nickname';
                     }
                     if (value.length < 2) {
-                      return '닉네임은 2자 이상이어야 합니다.';
+                      return 'Your nickname must be at least 2 characters.';
                     }
                     return null;
                   },
@@ -274,10 +274,10 @@ class _SignUpPageState extends State<SignUpPage> {
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return '비밀번호를 입력해 주세요.';
+                      return 'Please enter your password.';
                     }
                     if (value.length < 6) {
-                      return '비밀번호는 6자 이상이어야 합니다.';
+                      return 'Your password must be at least 6 characters.';
                     }
                     return null;
                   },
@@ -291,10 +291,10 @@ class _SignUpPageState extends State<SignUpPage> {
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return '비밀번호를 다시 한 번 입력해 주세요.';
+                      return 'Please enter your password again.';
                     }
                     if (value != _passwordController.text) {
-                      return '비밀번호가 일치하지 않습니다.';
+                      return 'Password mismatch.';
                     }
                     return null;
                   },

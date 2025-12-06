@@ -37,16 +37,16 @@ class MyPage extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           const Text(
-            '로그인이 필요합니다',
+            'Login is required.',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           const Text(
-            '나만의 디자인 저장, 랭킹 참여 등의 기능을 이용하려면',
+            'To use features such as saving your own designs and participating in rankings,',
             style: TextStyle(fontSize: 16, color: Colors.grey),
           ),
           const Text(
-            '로그인 또는 회원가입을 해주세요.',
+            'Please log in or sign up.',
             style: TextStyle(fontSize: 16, color: Colors.grey),
           ),
           const SizedBox(height: 40),
@@ -59,12 +59,12 @@ class MyPage extends StatelessWidget {
                 backgroundColor: const Color(0xFF3B2ECC), // LoginPage에서 사용된 색상
                 foregroundColor: Colors.white,
               ),
-              child: const Text('로그인', style: TextStyle(fontSize: 18)),
+              child: const Text('Log in', style: TextStyle(fontSize: 18)),
             ),
           ),
           TextButton(
             onPressed: () => Navigator.pushNamed(context, '/signup'),
-            child: const Text('회원가입', style: TextStyle(fontSize: 16, color: Colors.grey)),
+            child: const Text('Sign up', style: TextStyle(fontSize: 16, color: Colors.grey)),
           ),
         ],
       ),
