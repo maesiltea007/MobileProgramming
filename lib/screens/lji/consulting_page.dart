@@ -24,16 +24,13 @@ class ConsultingPage extends StatefulWidget {
 
 class _ConsultingPageState extends State<ConsultingPage> {
   late Design _design;
-
   late String _userId;
   late String _designId;
 
   final List<ChatMessage> _messages = [];
-
   final TextEditingController _inputController = TextEditingController();
 
   bool _isProcessing = false;
-
   bool _initialized = false;
 
   @override
@@ -55,30 +52,26 @@ class _ConsultingPageState extends State<ConsultingPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_initialized) return; // 👉 CHATS: 여러 번 초기화되지 않도록 가드
+    if (_initialized) return;
 
     final app = Provider.of<AppState>(context, listen: false);
     _userId = app.currentUserId ?? 'guest';
 
-    // 👉 CHATS: 디자인 id가 없을 수도 있으니 임시 id 생성
     _designId =
         _design.id ??
         'temp-${_userId}-${_design.createdAt?.millisecondsSinceEpoch}';
 
-    // 👉 CHATS: 기존 채팅 기록 로드
     final thread = ChatRepository.getThread(_userId, _designId);
     _messages.addAll(thread.messages);
-
     _initialized = true;
   }
 
   @override
   void dispose() {
-    _inputController.dispose(); // 👉 CHATS: 컨트롤러 정리
+    _inputController.dispose();
     super.dispose();
   }
 
-  // ✅ 기존 함수 (색 → hex) 그대로 유지, 위치만 State로 이동
   String _colorToHex(Color color) {
     final v = color.value.toRadixString(16).padLeft(8, '0');
     return '#${v.substring(2).toUpperCase()}';
@@ -86,7 +79,6 @@ class _ConsultingPageState extends State<ConsultingPage> {
 
   Future<void> _handleSend() async {
     if (_isProcessing) return;
-
     final text = _inputController.text.trim();
     if (text.isEmpty) return;
 
@@ -99,7 +91,6 @@ class _ConsultingPageState extends State<ConsultingPage> {
     });
     ChatRepository.addMessage(_userId, _designId, userMsg);
 
-    // ❗ 예외 안 던지고 항상 String 반환
     final replyText = await AIConsultingService.consult(
       design: _design,
       history: List<ChatMessage>.from(_messages),
@@ -115,7 +106,7 @@ class _ConsultingPageState extends State<ConsultingPage> {
     ChatRepository.addMessage(_userId, _designId, aiMsg);
   }
 
-  // 👉 CHATS: reset 버튼용, 해당 디자인의 채팅 기록 삭제
+  //reset 버튼용, 해당 디자인의 채팅 기록 삭제
   Future<void> _handleReset() async {
     ChatRepository.clearThread(_userId, _designId);
     setState(() {
@@ -138,7 +129,6 @@ class _ConsultingPageState extends State<ConsultingPage> {
 
             // Design it 버튼
             ElevatedButton(
-              // 🔥 변경점: AI가 답변 생성 중이면 버튼 비활성화
               onPressed: _isProcessing
                   ? null                              // 비활성화
                   : () {
@@ -178,9 +168,6 @@ class _ConsultingPageState extends State<ConsultingPage> {
             ),
 
             const Spacer(),
-
-            // 🔥 변경점: 홈 아이콘 완전히 제거
-            // (여기 있던 IconButton(Icons.home_outlined, ...) 블록 삭제)
           ],
         ),
         bottom: PreferredSize(
@@ -195,7 +182,6 @@ class _ConsultingPageState extends State<ConsultingPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 🔥 여기까지 프리뷰 영역도 기존 코드 그대로
           Hero(
             tag: 'design-preview-${d.id ?? 'temp'}',
             child: Material(
@@ -238,26 +224,26 @@ class _ConsultingPageState extends State<ConsultingPage> {
 
           const SizedBox(height: 24),
 
-          // 👉 CHATS: reset 버튼은 "채팅 영역"에 속하니까 여기 추가
+          // reset 버튼
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: _handleReset,
-                child: const Text('Reset chat', style: TextStyle(fontSize: 13)),
+                onPressed: _isProcessing ? null : _handleReset,
+                child: const Text(
+                  'Reset chat',
+                  style: TextStyle(fontSize: 13),
+                ),
               ),
             ),
           ),
 
-          // 🔄 기존: const Expanded( ... 'chating UI will be here.' ...)
-          //    → 실제 채팅 리스트로 교체
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
               itemCount: _messages.length + (_isProcessing ? 1 : 0),
               itemBuilder: (context, index) {
-                // 👉 CHATS: 마지막 아이템을 typing indicator로 사용
                 if (_isProcessing && index == _messages.length) {
                   return const TypingIndicatorBubble();
                 }
