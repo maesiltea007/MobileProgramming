@@ -34,3 +34,25 @@ flutter:
   assets:
     - assets/rank/
     - assets/api_key.txt
+    - assets/fonts/
+
+  fonts:
+    - family: Typewriter
+      fonts:
+        - asset: assets/fonts/AmericanTypewriter.ttc
+
+    - family: BrushScript
+      fonts:
+        - asset: assets/fonts/Brush Script.ttf
+
+    - family: Georgia
+      fonts:
+        - asset: assets/fonts/Georgia.ttf
+
+    - family: Impact
+      fonts:
+        - asset: assets/fonts/Impact.ttf
+
+    - family: Pretendard
+      fonts:
+        - asset: assets/fonts/Pretendard-Medium.otf

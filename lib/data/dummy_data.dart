@@ -20,7 +20,7 @@ void insertDummyData() {
   designs.put("d1", {
     "id": "d1",
     "text": "Hello World",
-    "fontFamily": "Roboto",
+    "fontFamily": "Pretendard",
     "fontColor": Colors.black.value,
     "backgroundColor": Colors.white.value,
     "ownerId": "user_dev_01",
@@ -31,7 +31,7 @@ void insertDummyData() {
   designs.put("d2", {
     "id": "d2",
     "text": "Epic Design",
-    "fontFamily": "GmarketSans",
+    "fontFamily": "Pretendard",
     "fontColor": Colors.white.value,
     "backgroundColor": Colors.blue.value,
     "ownerId": "user_dev_02",
@@ -42,7 +42,7 @@ void insertDummyData() {
   designs.put("d3", {
     "id": "d3",
     "text": "Color Font App",
-    "fontFamily": "NanumSquare",
+    "fontFamily": "Typewriter",
     "fontColor": Colors.black87.value,
     "backgroundColor": Colors.yellow.value,
     "ownerId": "user_dev_01",
@@ -53,7 +53,7 @@ void insertDummyData() {
   designs.put("d4", {
     "id": "d4",
     "text": "Color Font App",
-    "fontFamily": "NanumSquare",
+    "fontFamily": "Pretendard",
     "fontColor": Colors.black87.value,
     "backgroundColor": Colors.yellow.value,
     "ownerId": "7xZ8NHb62OTAf3R9LQQEgxTZnC03",
@@ -61,7 +61,7 @@ void insertDummyData() {
   designs.put("d5", {
     "id": "d5",
     "text": "Color Font App",
-    "fontFamily": "NanumSquare",
+    "fontFamily": "BrushScript",
     "fontColor": Colors.white.value,
     "backgroundColor": Colors.blue.value,
     "ownerId": "7xZ8NHb62OTAf3R9LQQEgxTZnC03",

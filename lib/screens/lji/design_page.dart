@@ -1,5 +1,6 @@
 import 'package:epic_design_helper/screens/lji/widgets/design_page_widgets/color_hex_row.dart';
 import 'package:epic_design_helper/screens/lji/widgets/design_page_widgets/design_preview.dart';
+import 'package:epic_design_helper/screens/lji/widgets/design_page_widgets/fonts_bottom_sheet.dart';
 import 'package:epic_design_helper/screens/lji/widgets/design_page_widgets/palette_bottom_sheet.dart';
 import 'package:epic_design_helper/screens/lji/widgets/design_page_widgets/save_options_popup.dart';
 import 'package:epic_design_helper/screens/lji/widgets/design_page_widgets/text_content_row.dart';
@@ -26,6 +27,14 @@ class _DesignPageState extends State<DesignPage> {
   late TextEditingController _bgHexController;
   late TextEditingController _fontHexController;
   late TextEditingController _textController; // 컨트롤러
+
+  final List<String> _availableFonts = [
+    'Typewriter',
+    'BrushScript',
+    'Georgia',
+    'Impact',
+    'Pretendard',
+  ];
 
   @override
   void initState() {
@@ -370,29 +379,48 @@ class _DesignPageState extends State<DesignPage> {
 
   //폰트 선택 위젯
   Widget _buildFontRow(String fontFamily, Color fontColor) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          'Az',
-          style: TextStyle(
-            fontSize: 40,
-            fontWeight: FontWeight.w600,
-            fontFamily: fontFamily,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('font', style: TextStyle(fontSize: 16)),
-            Text(
-              fontFamily,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+    return GestureDetector(
+      onTap: () async {
+        final selected = await showFontPickerBottomSheet(
+          context,
+          fonts: _availableFonts,
+          currentFontFamily: _fontFamily,
+          sampleText: _text,
+        );
+        if (selected != null) {
+          setState(() {
+            _fontFamily = selected;
+          });
+        }
+      },
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            'Az',
+            style: TextStyle(
+              fontSize: 40,
+              fontWeight: FontWeight.w600,
+              fontFamily: fontFamily,
+              color: fontColor,
             ),
-          ],
-        ),
-      ],
+          ),
+          const SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('font', style: TextStyle(fontSize: 16)),
+              Text(
+                fontFamily,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
