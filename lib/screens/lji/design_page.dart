@@ -484,13 +484,13 @@ class _DesignPageState extends State<DesignPage> {
   // 정말 삭제하시겠습니까 팝업
   void _showDeleteConfirmDialog() {
     if (widget.design.ownerId == 'new') { // 새 디자인이면 팝업 안 띄움
-      Navigator.of(context).pop();
+      Navigator.of(context).popUntil((route) => route.isFirst);
       return;
     };
 
     final id = widget.design.id;
     if (id == null) {
-      Navigator.of(context).pop();
+      Navigator.of(context).popUntil((route) => route.isFirst);
       return;
     }
     showDialog(
