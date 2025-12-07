@@ -5,6 +5,7 @@ class ColorHexRow extends StatelessWidget {
   final Color color;
   final TextEditingController controller;
   final ValueChanged<String> onSubmitted;
+  final VoidCallback onCircleTap;
 
   const ColorHexRow({
     super.key,
@@ -12,6 +13,7 @@ class ColorHexRow extends StatelessWidget {
     required this.color,
     required this.controller,
     required this.onSubmitted,
+    required this.onCircleTap,
   });
 
   @override
@@ -19,13 +21,16 @@ class ColorHexRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Container(
-          width: 72,
-          height: 72,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: color,
-            border: Border.all(color: Colors.black, width: 2),
+        GestureDetector(
+          onTap: onCircleTap,
+          child: Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color,
+              border: Border.all(color: Colors.black, width: 2),
+            ),
           ),
         ),
         const SizedBox(width: 16),

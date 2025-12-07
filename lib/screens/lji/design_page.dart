@@ -1,5 +1,6 @@
 import 'package:epic_design_helper/screens/lji/widgets/design_page_widgets/color_hex_row.dart';
 import 'package:epic_design_helper/screens/lji/widgets/design_page_widgets/design_preview.dart';
+import 'package:epic_design_helper/screens/lji/widgets/design_page_widgets/palette_bottom_sheet.dart';
 import 'package:epic_design_helper/screens/lji/widgets/design_page_widgets/save_options_popup.dart';
 import 'package:epic_design_helper/screens/lji/widgets/design_page_widgets/text_content_row.dart';
 import 'package:flutter/material.dart';
@@ -322,6 +323,18 @@ class _DesignPageState extends State<DesignPage> {
           });
         }
       },
+      onCircleTap: () async {
+        final picked = await showPaletteBottomSheet(
+          context,
+          initialColor: _backgroundColor,
+        );
+        if (picked != null) {
+          setState(() {
+            _backgroundColor = picked;
+            _bgHexController.text = _colorToHex(picked);
+          });
+        }
+      },
     );
   }
 
@@ -337,6 +350,18 @@ class _DesignPageState extends State<DesignPage> {
           setState(() {
             _fontColor = c;
             _fontHexController.text = _colorToHex(c);
+          });
+        }
+      },
+      onCircleTap: () async {
+        final picked = await showPaletteBottomSheet(
+          context,
+          initialColor: _backgroundColor,
+        );
+        if (picked != null) {
+          setState(() {
+            _backgroundColor = picked;
+            _bgHexController.text = _colorToHex(picked);
           });
         }
       },
