@@ -92,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${nickname} Welcome!')),
+            SnackBar(content: Text('Welcome, ${nickname}!')),
           );
           Navigator.pop(context);
         }
@@ -100,20 +100,20 @@ class _LoginPageState extends State<LoginPage> {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found' || e.code == 'invalid-email') {
         setState(() {
-          _emailErrorText = 'The email address is invalid.';
+          _emailErrorText = 'Invalid email address.';
         });
       } else if (e.code == 'wrong-password') {
         setState(() {
-          _passwordErrorText = 'Invalid password.';
+          _passwordErrorText = 'Incorrect password.';
         });
       } else if (e.code == 'invalid-credential') {
         setState(() {
-          _passwordErrorText = 'Incorrect email of password.';
+          _passwordErrorText = 'Incorrect email or password.';
         });
       } else if (e.code == 'network-request-failed') {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Network connection failed.')),
+            const SnackBar(content: Text('Network connection failed. Please try again.')),
           );
         }
       } else if (e.code == 'too-many-requests') {
@@ -269,7 +269,7 @@ class _LoginPageState extends State<LoginPage> {
 
                   // 4. 회원가입
                   const Text(
-                    "don't have an account?",
+                    "Don't have an account?",
                     style: TextStyle(
                       fontSize: 11,
                       color: Colors.black54,
@@ -283,7 +283,7 @@ class _LoginPageState extends State<LoginPage> {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: const Text(
-                      'sign up',
+                      'Sign up',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.black87,

@@ -26,51 +26,54 @@ class MyPage extends StatelessWidget {
 
   // 로그인하지 않았을 때
   Widget _buildLoggedOutPage(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.account_circle,
-            size: 80,
-            color: Colors.grey,
-          ),
-          const SizedBox(height: 24),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 40.0),
-            child: Column(
-              children: [
-                Text(
-                  'Login is required',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 12),
-                Text(
-                  'To use features such as saving your own designs and participating in rankings, please log in or sign up.',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 350.0),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.account_circle,
+              size: 80,
+              color: Colors.grey,
             ),
-          ),
-          const SizedBox(height: 40),
-          SizedBox(
-            width: 250,
-            child: ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, '/login'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                backgroundColor: const Color(0xFF3B2ECC), // LoginPage에서 사용된 색상
-                foregroundColor: Colors.white,
+            const SizedBox(height: 24),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 40.0),
+              child: Column(
+                children: [
+                  Text(
+                    'Account Required',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    'Log in or sign up to save your own designs and participate in rankings.',
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
-              child: const Text('Log in', style: TextStyle(fontSize: 18)),
             ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pushNamed(context, '/signup'),
-            child: const Text('Sign up', style: TextStyle(fontSize: 16, color: Colors.grey)),
-          ),
-        ],
+            const SizedBox(height: 40),
+            SizedBox(
+              width: 250,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pushNamed(context, '/login'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  backgroundColor: const Color(0xFF3B2ECC),
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Log in', style: TextStyle(fontSize: 18)),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pushNamed(context, '/signup'),
+              child: const Text('Sign up', style: TextStyle(fontSize: 16, color: Colors.grey)),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -119,7 +122,7 @@ class MyPage extends StatelessWidget {
           _buildMenuTile(context, Icons.design_services, 'My Designs', () {
             // TODO: 나의 디자인 페이지로 이동
           }),
-          _buildMenuTile(context, Icons.settings, 'App settings', () {
+          _buildMenuTile(context, Icons.settings, 'App Settings', () {
             /*
             Navigator.push(
               context,
@@ -127,7 +130,7 @@ class MyPage extends StatelessWidget {
             );
             */
           }),
-          _buildMenuTile(context, Icons.help_outline, 'Help/Contact', () {
+          _buildMenuTile(context, Icons.help_outline, 'Help & Contact', () {
             // TODO: 도움말 페이지로 이동
           }),
 

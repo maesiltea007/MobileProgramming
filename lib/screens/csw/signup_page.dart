@@ -180,7 +180,7 @@ class _SignUpPageState extends State<SignUpPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Registration and login successful!')),
+            const SnackBar(content: Text('You have successfully signed up and logged in!')),
           );
           Navigator.popUntil(context, ModalRoute.withName('/'));
         }
@@ -189,7 +189,7 @@ class _SignUpPageState extends State<SignUpPage> {
       if (e.code == 'weak-password') {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('The password is too weak. It must be at least 6 characters long.')),
+            const SnackBar(content: Text('Password is too weak. Must be at least 6 characters.')),
           );
         }
       } else if (e.code == 'email-already-in-use') {
@@ -207,7 +207,7 @@ class _SignUpPageState extends State<SignUpPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('An unexpected error has occurred.')),
+          SnackBar(content: Text('An unexpected error occurred.')),
         );
       }
     }
@@ -253,11 +253,11 @@ class _SignUpPageState extends State<SignUpPage> {
                 // 2. 닉네임 입력
                 _buildFormField(
                   labelText: "Nickname",
-                  hintText: 'Enter your nickname (will be displayed)',
+                  hintText: 'Enter your nickname',
                   controller: _nicknameController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your Nickname';
+                      return 'Please enter your nickname';
                     }
                     if (value.length < 2) {
                       return 'Your nickname must be at least 2 characters.';
@@ -295,7 +295,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       return 'Please enter your password again.';
                     }
                     if (value != _passwordController.text) {
-                      return 'Password mismatch.';
+                      return 'Passwords do not match.';
                     }
                     return null;
                   },
