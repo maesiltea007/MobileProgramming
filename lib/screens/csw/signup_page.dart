@@ -95,7 +95,7 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                  color: hasError ? Colors.red : _primaryColor,
+                  color: asyncErrorText != null ? Colors.red : _primaryColor,
                   width: 1.8
               ),
               borderRadius: BorderRadius.circular(6),
@@ -153,7 +153,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
       if (nicknameCheck.docs.isNotEmpty) {
         setState(() {
-          _nicknameErrorText = 'The nickname is already taken.';
+          _nicknameErrorText = 'This nickname is already in use.';
         });
         return; // 중복이므로 중단
       }
@@ -241,7 +241,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email.';
                     }
-                    if (!value.contains('@') || !value.contains('.')) {
+                    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+                    if (!emailRegex.hasMatch(value)) {
                       return 'This is not a valid email address.';
                     }
                     return null;

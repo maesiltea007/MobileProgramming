@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../state/app_state.dart';
+import 'dart:async';
 
 const Color _primaryColor = Color(0xFF3B2ECC);
 
@@ -22,6 +23,10 @@ class _LoginPageState extends State<LoginPage> {
   String? _emailErrorText;
   String? _passwordErrorText;
 
+  bool _isLoginDisabled = false;
+  Timer? _disableTimer;
+  static const int _disableDurationSeconds = 10;
+
   @override
   void initState() {
     super.initState();
@@ -36,6 +41,7 @@ class _LoginPageState extends State<LoginPage> {
     _passwordController.removeListener(_resetAsyncErrors);
     _emailController.dispose();
     _passwordController.dispose();
+    _disableTimer?.cancel();
     super.dispose();
   }
 
@@ -112,6 +118,22 @@ class _LoginPageState extends State<LoginPage> {
         }
       } else if (e.code == 'too-many-requests') {
         if (mounted) {
+          setState(() {
+            _isLoginDisabled = true;
+          });
+
+          _disableTimer?.cancel();
+          _disableTimer = Timer(
+            const Duration(seconds: _disableDurationSeconds),
+                () {
+              if (mounted) {
+                setState(() {
+                  _isLoginDisabled = false;
+                });
+              }
+            },
+          );
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Too many requests. Try again later.')),
           );
@@ -231,12 +253,12 @@ class _LoginPageState extends State<LoginPage> {
                   Align(
                     alignment: Alignment.center,
                     child: TextButton(
-                      onPressed: _login,
-                      child: const Text(
+                      onPressed: _isLoginDisabled ? null : _login,
+                      child: Text(
                         'Log in',
                         style: TextStyle(
                           fontSize: 16,
-                          color: _primaryColor,
+                          color: _isLoginDisabled ? Colors.grey : _primaryColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
