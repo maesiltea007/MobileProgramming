@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    // 💡 입력이 시작되면 오류 메시지 초기화
+    // 입력이 시작되면 오류 메시지 초기화
     _emailController.addListener(_resetAsyncErrors);
     _passwordController.addListener(_resetAsyncErrors);
   }
@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  // 💡 입력이 감지되면 비동기 오류 상태를 초기화합니다.
+  // 입력이 시작되면 오류 상태 초기화
   void _resetAsyncErrors() {
     if (_emailErrorText != null || _passwordErrorText != null) {
       setState(() {
@@ -50,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
 
-  // 💡 Firebase 로그인 로직
+  // Firebase 로그인 로직
   void _login() async {
     // 폼 유효성 검사 (동기적 검사)
     if (!_formKey.currentState!.validate()) {
@@ -66,14 +66,6 @@ class _LoginPageState extends State<LoginPage> {
     final email = _emailController.text.trim().toLowerCase();
     final password = _passwordController.text.trim();
     final appState = Provider.of<AppState>(context, listen: false);
-
-    /*
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("로그인 시도 중...")),
-      );
-    }
-     */
 
     try {
       final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -102,13 +94,30 @@ class _LoginPageState extends State<LoginPage> {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found' || e.code == 'invalid-email') {
         setState(() {
-          _emailErrorText = 'The email is either not registered or invalid.';
+          _emailErrorText = 'The email address is invalid.';
         });
-      } else if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
+      } else if (e.code == 'wrong-password') {
         setState(() {
-          _passwordErrorText = 'The passwords do not match.';
+          _passwordErrorText = 'Invalid password.';
         });
-      } else {
+      } else if (e.code == 'invalid-credential') {
+        setState(() {
+          _passwordErrorText = 'Incorrect email of password.';
+        });
+      } else if (e.code == 'network-request-failed') {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Network connection failed.')),
+          );
+        }
+      } else if (e.code == 'too-many-requests') {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Too many requests. Try again later.')),
+          );
+        }
+      }
+      else {
         String errorMessage = 'Login Failed: ${e.message}';
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
