@@ -174,6 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.email, color: Colors.grey),
                       hintText: 'Email (id)',
                       contentPadding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -202,6 +203,7 @@ class _LoginPageState extends State<LoginPage> {
                     controller: _passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.lock, color: Colors.grey),
                       hintText: 'Password',
                       contentPadding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 8),

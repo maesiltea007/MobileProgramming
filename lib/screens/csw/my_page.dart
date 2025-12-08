@@ -36,18 +36,22 @@ class MyPage extends StatelessWidget {
             color: Colors.grey,
           ),
           const SizedBox(height: 24),
-          const Text(
-            'Login is required.',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'To use features such as saving your own designs and participating in rankings,',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
-          ),
-          const Text(
-            'Please log in or sign up.',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 40.0),
+            child: Column(
+              children: [
+                Text(
+                  'Login is required',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 12),
+                Text(
+                  'To use features such as saving your own designs and participating in rankings, please log in or sign up.',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 40),
           SizedBox(
