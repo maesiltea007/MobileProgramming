@@ -40,6 +40,30 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
     _rankFuture = _loadRanking();
   }
 
+  void _requireLogin() {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text("Login Required"),
+          content: const Text("Please sign in to use the like feature."),
+          actions: [
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () => Navigator.pop(context),
+            ),
+            TextButton(
+              child: const Text("Login"),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, "/login");
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   // -------------------------------------------------------------------------
   // 전체 랭킹 불러오기
@@ -202,7 +226,16 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
               final rankLabel = (tab == 1) ? "${item.rank}" : null;
 
               return GestureDetector(
-                onDoubleTap: () => _toggleLike(item.id),
+                onDoubleTap: () {
+                  final app = Provider.of<AppState>(context, listen: false);
+
+                  if (!app.isLoggedIn) {
+                    _requireLogin();
+                    return;
+                  }
+
+                  _toggleLike(item.id);
+                },
 
                 child: Card(
                   elevation: 2,
@@ -265,7 +298,17 @@ class _RankPageState extends State<RankPage> with SingleTickerProviderStateMixin
                                     color: item.isLiked ? Colors.red : Colors
                                         .grey,
                                   ),
-                                  onPressed: () => _toggleLike(item.id),
+                                  onPressed: () {
+                                    final app = Provider.of<AppState>(
+                                        context, listen: false);
+
+                                    if (!app.isLoggedIn) {
+                                      _requireLogin();
+                                      return; // 🔥 로그인 안 되어 있으면 좋아요 동작 막기
+                                    }
+
+                                    _toggleLike(item.id); // 로그인된 경우에만 실행
+                                  },
                                 ),
                                 Text("${item.score}"),
                               ],
