@@ -150,17 +150,28 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 final newName = controller.text.trim();
-                if (newName.isNotEmpty) {
-                  // [핵심] AppState 닉네임 업데이트 호출
-                  appState.updateNickname(newName);
-                  Navigator.pop(context);
 
-                  // (선택) 변경 확인 스낵바
+                if (newName.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Nickname changed to $newName')),
+                    const SnackBar(content: Text('Nickname cannot be empty.')),
                   );
+                  return;
+                }
+                final success = await appState.updateNickname(newName);
+
+                if (context.mounted) {
+                  if (success) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Nickname changed to $newName')),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Error: Nickname is already taken or failed to update.')),
+                    );
+                  }
                 }
               },
               style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B2ECC)),

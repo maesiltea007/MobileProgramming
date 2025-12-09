@@ -98,22 +98,45 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  Future<void> updateNickname(String newNickname) async {
-    currentNickname = newNickname;
-    notifyListeners();
+  Future<bool> updateNickname(String newNickname) async {
+    if (currentUserId == null) {
+      return false;
+    }
 
-    if (currentUserId != null) {
-      try {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(currentUserId)
-            .set(
-          {'nickname': newNickname},
-          SetOptions(merge: true),
-        );
-      } catch (e) {
-        print("Failed to save nickname to Firestore: $e");
+    if (newNickname == currentNickname) {
+      return true;
+    }
+
+    final usersCollection = FirebaseFirestore.instance.collection('users');
+
+    try {
+      final querySnapshot = await usersCollection
+          .where('nickname', isEqualTo: newNickname)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final existingDoc = querySnapshot.docs.first;
+
+        if (existingDoc.id != currentUserId) {
+          print("Nickname '$newNickname' is already taken by another user.");
+          return false;
+        }
       }
+
+      await usersCollection.doc(currentUserId).set(
+        {'nickname': newNickname},
+        SetOptions(merge: true),
+      );
+
+      currentNickname = newNickname;
+      notifyListeners();
+
+      return true;
+
+    } catch (e) {
+      print("Failed to check or save nickname to Firestore: $e");
+      return false;
     }
   }
 
