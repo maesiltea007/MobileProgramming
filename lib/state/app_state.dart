@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/ranking_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AppState extends ChangeNotifier {
   // 로그인 변수
@@ -41,8 +42,11 @@ class AppState extends ChangeNotifier {
       } else {
         currentUserId = user.uid;
         isLoggedIn = true;
+
+        await _fetchUserProfile(user.uid);
+
+        notifyListeners();
       }
-      notifyListeners();
     });
   }
 
@@ -71,8 +75,82 @@ class AppState extends ChangeNotifier {
     return RankingService.getScore(designId);
   }
 
-  void updateNickname(String newNickname) {
+  // nickname 변경 함수
+  Future<void> _fetchUserProfile(String uid) async {
+    try {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      if (doc.exists) {
+        final data = doc.data();
+        if (data != null && data.containsKey('nickname')) {
+          currentNickname = data['nickname'];
+        }
+      }
+    } catch (e) {
+      print("Error fetching profile: $e");
+    }
+  }
+
+  Future<void> updateNickname(String newNickname) async {
     currentNickname = newNickname;
     notifyListeners();
+
+    if (currentUserId != null) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUserId)
+            .set(
+          {'nickname': newNickname},
+          SetOptions(merge: true),
+        );
+      } catch (e) {
+        print("Failed to save nickname to Firestore: $e");
+      }
+    }
+  }
+
+  // 비밀번호 변경 함수
+  Future<void> changePassword(String newPassword) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        await user.updatePassword(newPassword);
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'requires-recent-login') {
+          throw e;
+        } else {
+          print("Password change failed: ${e.message}");
+          throw Exception(e.message);
+        }
+      }
+    }
+  }
+
+  // 회원 탈퇴 함수
+  Future<void> deleteAccount() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).delete();
+
+        await user.delete();
+
+        currentUserId = null;
+        currentNickname = null;
+        isLoggedIn = false;
+        notifyListeners();
+
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'requires-recent-login') {
+          throw e;
+        } else {
+          print("Account deletion failed: ${e.message}");
+          throw Exception(e.message);
+        }
+      } catch (e) {
+        print("Error deleting account: $e");
+        throw Exception("Failed to delete account");
+      }
+    }
   }
 }
