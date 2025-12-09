@@ -15,7 +15,6 @@ class AppSettingsPage extends StatefulWidget {
 
 class _AppSettingsPageState extends State<AppSettingsPage> {
   // --- 상태 변수 (State Variables) ---
-  bool _isDarkModeEnabled = false;
   bool _rankNotificationEnabled = true;
   bool _aiNotificationEnabled = true;
   bool _promoNotificationEnabled = false;
@@ -28,10 +27,10 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
-          color: Colors.black87,
+          color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black87,
         ),
       ),
     );
@@ -264,9 +263,9 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('App Settings'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
+        // backgroundColor: Colors.white,
+        // foregroundColor: Colors.black,
+        // elevation: 0,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -327,12 +326,11 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
             _buildSwitchTile(
               Icons.brightness_6_outlined,
               'Dark Mode',
-              _isDarkModeEnabled,
+              // [수정] AppState의 isDarkMode 사용
+              appState.isDarkMode,
                   (bool value) {
-                setState(() {
-                  _isDarkModeEnabled = value;
-                  // TODO: 실제 테마 변경 로직 (Provider/ThemeData 업데이트) 구현
-                });
+                // [수정] AppState의 toggleDarkMode 함수 호출
+                appState.toggleDarkMode();
               },
             ),
 
