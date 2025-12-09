@@ -130,9 +130,11 @@ class MyPage extends StatelessWidget {
           _buildMenuTitle(context, Icons.leaderboard_outlined, 'Rankings', () {
             Navigator.of(context).pop(1);
           }),
+          /*
           _buildMenuTitle(context, Icons.favorite_border, 'Liked Designs', () {
             // TODO: 좋아요 한 디자인 목록 페이지로 이동
           }),
+          */
 
           const SizedBox(height: 20),
 

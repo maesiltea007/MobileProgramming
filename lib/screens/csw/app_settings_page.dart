@@ -192,7 +192,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                   () {
                 // TODO: 기본 폰트 선택 BottomSheet/페이지로 이동
               },
-              subtitle: 'Current: Pretendard', // 현재 설정된 값 표시
+              subtitle: 'Current: Arial', // 현재 설정된 값 표시
             ),
 
             const Divider(height: 1, thickness: 8, color: Colors.black12),
