@@ -371,7 +371,7 @@ class _DesignPageState extends State<DesignPage> {
         if (picked != null) {
           setState(() {
             _fontColor = picked;
-            _bgHexController.text = _colorToHex(picked);
+            _fontHexController.text = _colorToHex(picked);
           });
         }
       },
