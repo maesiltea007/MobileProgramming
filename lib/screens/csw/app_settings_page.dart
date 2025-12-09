@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
-// import '../../state/app_state.dart'; // AppState를 사용하여 닉네임, 테마 등을 관리하는 경우 주석 해제
+import 'package:provider/provider.dart';
+import '../../state/app_state.dart';
 
 // 앱에서 일관되게 사용하는 기본 색상
 const Color _primaryColor = Color(0xFF3B2ECC);
@@ -18,9 +18,6 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
   bool _rankNotificationEnabled = true;
   bool _aiNotificationEnabled = true;
   bool _promoNotificationEnabled = false;
-
-  // 닉네임은 임시로 'DesignMaster77'을 사용하며, 실제 앱에서는 Provider나 다른 상태 관리 도구에서 가져와야 합니다.
-  String _currentNickname = 'DesignMaster77';
 
   // --- 유틸리티 위젯 (Utility Widgets) ---
 
@@ -99,11 +96,56 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
     );
   }
 
+  void _showEditNicknameDialog(BuildContext context, AppState appState) {
+    final TextEditingController controller = TextEditingController(
+      text: appState.currentNickname ?? '',
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit Nickname'),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              labelText: 'New Nickname',
+              hintText: 'Enter your nickname',
+              border: OutlineInputBorder(),
+            ),
+            autofocus: true,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final newName = controller.text.trim();
+                if (newName.isNotEmpty) {
+                  // [핵심] AppState 닉네임 업데이트 호출
+                  appState.updateNickname(newName);
+                  Navigator.pop(context);
+
+                  // (선택) 변경 확인 스낵바
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Nickname changed to $newName')),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B2ECC)),
+              child: const Text('Save', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // AppState를 사용한다면 여기서 닉네임을 가져올 수 있습니다.
-    // final appState = Provider.of<AppState>(context);
-    // _currentNickname = appState.nickname;
+    final appState = Provider.of<AppState>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -126,12 +168,9 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
               Icons.person_outline,
               'Edit Profile / Nickname',
                   () {
-                // TODO: 닉네임 수정 페이지로 이동 또는 모달 표시
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Navigate to Nickname Edit Page')),
-                );
+                _showEditNicknameDialog(context, appState);
               },
-              subtitle: 'Current: $_currentNickname',
+              subtitle: 'Current: ${appState.currentNickname ?? 'Guest'}',
             ),
             _buildMenuTile(
               context,
