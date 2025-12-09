@@ -11,6 +11,7 @@ import '../../services/ranking_service.dart';
 import 'package:provider/provider.dart';
 import '../../state/app_state.dart';
 import 'consulting_page.dart';
+import '../csw/login_page.dart';
 
 class DesignPage extends StatefulWidget {
   final Design design;
@@ -438,6 +439,12 @@ class _DesignPageState extends State<DesignPage> {
 
   // 팝업창 "overwrite" or "save as new"
   void _showSaveOptions() {
+    final appState = Provider.of<AppState>(context, listen: false);
+    if (!appState.isLoggedIn) {
+      _showLoginRequiredDialog();
+      return;
+    }
+
     if (widget.design.ownerId == 'new') { // 새 디자인 생성인 경우에는 save as new
       _saveAsNew();
       return;
@@ -551,5 +558,35 @@ class _DesignPageState extends State<DesignPage> {
   Future<void> _deleteDesign(String id) async {
     DesignRepository.delete(id);
     Navigator.of(context).popUntil((route) => route.isFirst);
+  }
+
+  void _showLoginRequiredDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Login Required'),
+          content: const Text(
+              'You must be logged in to save your design. Would you like to log in or sign up now?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const LoginPage(),
+                  ),
+                );
+              },
+              child: const Text('Log In / Sign Up'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
