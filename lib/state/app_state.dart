@@ -70,4 +70,9 @@ class AppState extends ChangeNotifier {
   int getScore(String designId) {
     return RankingService.getScore(designId);
   }
+
+  void updateNickname(String newNickname) {
+    currentNickname = newNickname;
+    notifyListeners();
+  }
 }
