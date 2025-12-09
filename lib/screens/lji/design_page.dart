@@ -567,7 +567,7 @@ class _DesignPageState extends State<DesignPage> {
         return AlertDialog(
           title: const Text('Login Required'),
           content: const Text(
-              'You must be logged in to save your design. Would you like to log in or sign up now?'),
+              'Please sign in to save your design.'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -582,7 +582,7 @@ class _DesignPageState extends State<DesignPage> {
                   ),
                 );
               },
-              child: const Text('Log In / Sign Up'),
+              child: const Text('Log In'),
             ),
           ],
         );
