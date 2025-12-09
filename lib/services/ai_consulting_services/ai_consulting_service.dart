@@ -1,16 +1,18 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import '../../models/chat_message.dart';
-import '../../models/chat_thread.dart';
 import '../../models/design.dart';
 
 class AIConsultingService {
-
   static String? _apiKey;
+
   static Future<void> loadApiKey() async {
     String raw = await rootBundle.loadString('assets/api_key.txt');
     raw = raw
@@ -19,9 +21,11 @@ class AIConsultingService {
         .replaceAll('\n', '')
         .trim();
     _apiKey = raw;
-    print("Loaded API KEY: '${_apiKey}'");
+    print("Loaded API KEY: '$_apiKey'");
   }
-  static const String _endpoint = "https://openrouter.ai/api/v1/chat/completions";
+
+  static const String _endpoint =
+      "https://openrouter.ai/api/v1/chat/completions";
   static const String _model = "tngtech/deepseek-r1t2-chimera:free";
 
   /// 디자인 + 기존 히스토리 + 새 메시지 → AI 응답 텍스트
@@ -42,19 +46,27 @@ class AIConsultingService {
     );
 
     try {
-      final response = await http.post(
+      // 혹시 아직 API 키를 안 읽었다면 여기서 로드
+      if (_apiKey == null || _apiKey!.isEmpty) {
+        await loadApiKey();
+      }
+
+      final response = await http
+          .post(
         Uri.parse(_endpoint),
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer ${_apiKey}",
-          "HTTP-Referer": "https://github.com/maesiltea007/MobileProgramming",
+          "Authorization": "Bearer $_apiKey",
+          "HTTP-Referer":
+          "https://github.com/maesiltea007/MobileProgramming",
           "X-Title": "Epic Design Helper",
         },
         body: jsonEncode({
           "model": _model,
           "messages": messages,
         }),
-      );
+      )
+          .timeout(const Duration(seconds: 30)); // 타임아웃 추가
 
       // 1) HTTP 상태코드 체크
       if (response.statusCode != 200) {
@@ -79,8 +91,18 @@ class AIConsultingService {
       }
 
       return content;
+    } on SocketException catch (e, st) {
+      // 네트워크 끊김 / DNS 문제 등
+      debugPrint('🔥 Network error while calling AI: $e');
+      debugPrint('🔥 stack: $st');
+      return 'It seems your internet connection is down. Please check your network and try again.';
+    } on TimeoutException catch (e, st) {
+      // 타임아웃
+      debugPrint('🔥 Timeout while calling AI API: $e');
+      debugPrint('🔥 stack: $st');
+      return 'The AI server is taking too long to respond. Please try again in a moment.';
     } catch (e, st) {
-      // 3) 네트워크/파싱 등 모든 예외 로그
+      // 그 밖의 모든 예외
       debugPrint('🔥 AIConsultingService.consult error: $e');
       debugPrint('🔥 stack: $st');
       return 'A technical error occurred while generating feedback. Please try again.';
