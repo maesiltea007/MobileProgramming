@@ -366,11 +366,11 @@ class _DesignPageState extends State<DesignPage> {
       onCircleTap: () async {
         final picked = await showPaletteBottomSheet(
           context,
-          initialColor: _backgroundColor,
+          initialColor: _fontColor,
         );
         if (picked != null) {
           setState(() {
-            _backgroundColor = picked;
+            _fontColor = picked;
             _bgHexController.text = _colorToHex(picked);
           });
         }
