@@ -4,6 +4,7 @@ import '../../state/app_state.dart';
 import '../lji/library_page.dart';
 import '../csw/help_page.dart';
 import '../csw/app_settings_page.dart';
+import '../kyh/rank_page.dart';
 
 class MyPage extends StatelessWidget {
   const MyPage({super.key});
@@ -121,20 +122,26 @@ class MyPage extends StatelessWidget {
           ),
 
           // 메뉴 리스트
-          _buildMenuTile(context, Icons.design_services, 'My Designs', () {
-            // TODO: 나의 디자인 페이지로 이동
+          _buildSectionTitle("My Activity"),
+          _buildMenuTitle(context, Icons.design_services, 'My Library', () {
+            // LibraryPage로 이동
+            Navigator.of(context).pop(3);
           }),
-          _buildMenuTile(context, Icons.settings, 'App Settings', () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const AppSettingsPage())
-            );
+          _buildMenuTitle(context, Icons.leaderboard_outlined, 'Rankings', () {
+            Navigator.of(context).pop(1);
           }),
-          _buildMenuTile(context, Icons.help_outline, 'Help & Contact', () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const HelpPage()),
-            );
+          _buildMenuTitle(context, Icons.favorite_border, 'Liked Designs', () {
+            // TODO: 좋아요 한 디자인 목록 페이지로 이동
+          }),
+
+          const SizedBox(height: 20),
+
+          _buildSectionTitle("Settings & Support"),
+          _buildMenuTitle(context, Icons.settings_outlined, 'App Settings', () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const AppSettingsPage()));
+          }),
+          _buildMenuTitle(context, Icons.help_outline, 'Help & Contact', () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const HelpPage()));
           }),
 
           const Divider(height: 40),
@@ -159,7 +166,7 @@ class MyPage extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuTile(BuildContext context, IconData icon, String title, VoidCallback onTap) {
+  Widget _buildMenuTitle(BuildContext context, IconData icon, String title, VoidCallback onTap) {
     return Column(
       children: [
         ListTile(
@@ -170,6 +177,20 @@ class MyPage extends StatelessWidget {
         ),
         const Divider(height: 1, indent: 20, endIndent: 20),
       ],
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16.0, top: 16.0, bottom: 8.0),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          color: Colors.grey,
+        ),
+      ),
     );
   }
 }
