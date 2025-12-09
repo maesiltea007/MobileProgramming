@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../state/app_state.dart';
 import '../lji/library_page.dart';
+import '../csw/help_page.dart';
+import '../csw/app_settings_page.dart';
 
 class MyPage extends StatelessWidget {
   const MyPage({super.key});
@@ -123,15 +125,16 @@ class MyPage extends StatelessWidget {
             // TODO: 나의 디자인 페이지로 이동
           }),
           _buildMenuTile(context, Icons.settings, 'App Settings', () {
-            /*
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const AppSettingPage())
+              MaterialPageRoute(builder: (context) => const AppSettingsPage())
             );
-            */
           }),
           _buildMenuTile(context, Icons.help_outline, 'Help & Contact', () {
-            // TODO: 도움말 페이지로 이동
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const HelpPage()),
+            );
           }),
 
           const Divider(height: 40),
