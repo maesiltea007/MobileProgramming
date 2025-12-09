@@ -77,12 +77,12 @@ class HelpPage extends StatelessWidget {
             _buildMenuTile(
               context,
               Icons.format_paint_outlined,
-              'How to Use the Color Picker?',
+              'How to Use the Color Snap?',
                   () {
                 _showHelpDialog(
                   context,
-                  'Color Picker Guide',
-                  'The Color Picker allows you to select precise colors using a visual wheel, sliders, or by entering Hex/RGB/HSL values. Use the "Scan" feature to extract colors directly from an image or camera view.',
+                  'Color Snap Guide',
+                  'The Color Snap allows you to select precise colors using a visual wheel, sliders, or by entering Hex/RGB/HSL values. Use the "Scan" feature to extract colors directly from an image or camera view.',
                 );
               },
             ),
@@ -178,7 +178,7 @@ class HelpPage extends StatelessWidget {
                 _showHelpDialog(
                   context,
                   'Bug Report',
-                  'Please contact us immediately via email at support@colormaster.com with a description of the issue and a screenshot (if possible).',
+                  'Please contact us immediately via email at support@colorsnap.com with a description of the issue and a screenshot (if possible).',
                 );
               },
             ),
@@ -190,7 +190,7 @@ class HelpPage extends StatelessWidget {
                 _showHelpDialog(
                   context,
                   'General Inquiry',
-                  'For all other non-technical questions, please email us at info@colormaster.com.',
+                  'For all other non-technical questions, please email us at info@colorsnap.com.',
                 );
               },
             ),
@@ -202,7 +202,7 @@ class HelpPage extends StatelessWidget {
                 _showHelpDialog(
                   context,
                   'Feedback',
-                  'We value your feedback! Send us your ideas for new features or improvements to feedback@colormaster.com.',
+                  'We value your feedback! Send us your ideas for new features or improvements to feedback@colorsnap.com.',
                 );
               },
             ),
@@ -244,7 +244,7 @@ class HelpPage extends StatelessWidget {
                 _showHelpDialog(
                   context,
                   'Application Information',
-                  'Color Master - Epic Design Helper\nVersion: 1.0.0',
+                  'Color Snap - Epic Design Helper\nVersion: 1.0.0',
                 );
               },
             ),

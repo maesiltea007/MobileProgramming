@@ -182,7 +182,7 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    'Color Master',
+                    'Color Snap',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w600,
