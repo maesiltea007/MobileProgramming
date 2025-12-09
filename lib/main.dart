@@ -105,6 +105,17 @@ class _MainNavigatorState extends State<MainNavigator> {
 
   void _onItemTapped(int index) => setState(() => _selectedIndex = index);
 
+  // MyPage로 이동하는 함수
+  void _navigateToMyPage() async {
+    final result = await Navigator.pushNamed(context, '/mypage');
+
+    if (result != null && result is int) {
+      setState(() {
+        _selectedIndex = result;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,7 +124,7 @@ class _MainNavigatorState extends State<MainNavigator> {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () => Navigator.pushNamed(context, '/mypage'),
+            onPressed: _navigateToMyPage,
           ),
         ],
       ),
