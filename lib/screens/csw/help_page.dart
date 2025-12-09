@@ -206,48 +206,6 @@ class HelpPage extends StatelessWidget {
                 );
               },
             ),
-
-            // ===========================================
-            // 4. LEGAL AND APP INFO
-            // ===========================================
-            _buildSectionTitle('Information & Legal'),
-
-            _buildMenuTile(
-              context,
-              Icons.description_outlined,
-              'Terms of Service',
-                  () {
-                _showHelpDialog(
-                  context,
-                  'Terms of Service',
-                  'By using this application, you agree to our Terms of Service (TOS). Please visit our website [Website URL] to read the full document.',
-                );
-              },
-            ),
-            _buildMenuTile(
-              context,
-              Icons.security_outlined,
-              'Privacy Policy',
-                  () {
-                _showHelpDialog(
-                  context,
-                  'Privacy Policy',
-                  'We are committed to protecting your personal data. For details on how we collect and use your information, please visit our Privacy Policy [Website URL].',
-                );
-              },
-            ),
-            _buildMenuTile(
-              context,
-              Icons.info_outline,
-              'App Version: 1.0.0',
-                  () {
-                _showHelpDialog(
-                  context,
-                  'Application Information',
-                  'Color Snap - Epic Design Helper\nVersion: 1.0.0',
-                );
-              },
-            ),
             const SizedBox(height: 30),
           ],
         ),
