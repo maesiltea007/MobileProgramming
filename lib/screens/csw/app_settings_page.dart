@@ -78,7 +78,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Confirm Account Deletion'),
-        content: const Text('Are you sure you want to permanently delete your account and all saved data? This action cannot be undone.'),
+        content: const Text('Are you sure you want to permanently delete your account? This action cannot be undone.'),
         actions: [
           TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
@@ -196,7 +196,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
             obscureText: true, // 비밀번호 가리기
             decoration: const InputDecoration(
               labelText: 'New Password',
-              hintText: 'Enter new password (min. 6 chars)',
+              hintText: 'Enter new password (6+ chars)',
               border: OutlineInputBorder(),
             ),
             autofocus: true,
@@ -413,7 +413,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                 _showHelpDialog(
                   context,
                   'Terms of Service',
-                  'By using this application, you agree to our Terms of Service (TOS). Please visit our website [Website URL] to read the full document.',
+                  'Your use of this app is subject to our Terms of Service. For the full details, please visit our official website.',
                 );
               },
             ),
@@ -425,7 +425,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                 _showHelpDialog(
                   context,
                   'Privacy Policy',
-                  'We are committed to protecting your personal data. For details on how we collect and use your information, please visit our Privacy Policy [Website URL].',
+                  'We are committed to protecting your privacy. Our Privacy Policy explains how we collect, use, and share your information. You can review the full policy on our website.',
                 );
               },
             ),
@@ -437,7 +437,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                 _showHelpDialog(
                   context,
                   'Application Information',
-                  'Color Snap - Epic Design Helper\nVersion: 1.0.0',
+                  'Color Snap - Design Helper\nVersion: 1.0.0',
                 );
               },
             ),

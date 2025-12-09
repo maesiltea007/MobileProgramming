@@ -69,9 +69,7 @@ class HelpPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ===========================================
             // 1. FREQUENTLY ASKED QUESTIONS (FAQ)
-            // ===========================================
             _buildSectionTitle('Frequently Asked Questions'),
 
             _buildMenuTile(
@@ -82,7 +80,7 @@ class HelpPage extends StatelessWidget {
                 _showHelpDialog(
                   context,
                   'Color Snap Guide',
-                  'The Color Snap allows you to select precise colors using a visual wheel, sliders, or by entering Hex/RGB/HSL values. Use the "Scan" feature to extract colors directly from an image or camera view.',
+                  'Color Snap allows you to precisely select colors using a visual wheel, sliders, or by directly entering Hex/RGB/HSL values. Use the "Scan" feature to extract colors instantly from an image or camera.',
                 );
               },
             ),
@@ -94,7 +92,7 @@ class HelpPage extends StatelessWidget {
                 _showHelpDialog(
                   context,
                   'AI Consulting',
-                  'Our AI Consulting feature allows you to chat with an AI assistant for real-time color theory advice, design suggestions, and feedback on your color palettes. This feature requires an active network connection.',
+                  'Chat with our AI assistant for real-time color theory advice, design suggestions, and instant feedback on your color palettes. This feature requires an active network connection.',
                 );
               },
             ),
@@ -106,7 +104,7 @@ class HelpPage extends StatelessWidget {
                 _showHelpDialog(
                   context,
                   'My Designs Management',
-                  'You can save your custom color palettes and design mockups to the "My Designs" section. Designs can be edited or deleted later. This feature requires you to be logged in.',
+                  'Save your custom color palettes and design mockups to the "Library" section. Saved designs can be edited, deleted, or published to the ranking. This feature requires you to be logged in.',
                 );
               },
             ),
@@ -118,14 +116,12 @@ class HelpPage extends StatelessWidget {
                 _showHelpDialog(
                   context,
                   'Ranking Criteria',
-                  'The design ranking is based on various metrics, including originality, adherence to color theory principles, and community feedback (likes/ratings). Rankings are updated daily.',
+                  'The design ranking is calculated based on metrics such as originality, adherence to color theory principles, and community feedback (likes and ratings).',
                 );
               },
             ),
 
-            // ===========================================
             // 2. ACCOUNT AND PRIVACY
-            // ===========================================
             _buildSectionTitle('Account & Privacy'),
 
             _buildMenuTile(
@@ -136,7 +132,7 @@ class HelpPage extends StatelessWidget {
                 _showHelpDialog(
                   context,
                   'Nickname Change',
-                  'You can change your nickname by navigating to the "App Settings" page. Please note that nicknames must be unique and adhere to our policy guidelines.',
+                  'You can update your nickname in the "App Settings" page. Please remember that all nicknames must be unique.',
                 );
               },
             ),
@@ -148,7 +144,7 @@ class HelpPage extends StatelessWidget {
                 _showHelpDialog(
                   context,
                   'Password Management',
-                  'To change your password, go to "App Settings". If you forgot your password, please use the "Forgot Password" link on the login screen to receive a reset link via email.',
+                  'You can update your password in the "App Settings" page.',
                 );
               },
             ),
@@ -160,14 +156,12 @@ class HelpPage extends StatelessWidget {
                 _showHelpDialog(
                   context,
                   'Account Deletion',
-                  'If you wish to delete your account, please send a request to [Your Support Email] from your registered email address. All saved data (designs, chats) will be permanently removed.',
+                  'To permanently delete your account and all associated data (designs, chats), please request deletion through the "App Settings" menu.',
                 );
               },
             ),
 
-            // ===========================================
             // 3. CONTACT AND FEEDBACK
-            // ===========================================
             _buildSectionTitle('Contact & Feedback'),
 
             _buildMenuTile(
@@ -178,7 +172,7 @@ class HelpPage extends StatelessWidget {
                 _showHelpDialog(
                   context,
                   'Bug Report',
-                  'Please contact us immediately via email at support@colorsnap.com with a description of the issue and a screenshot (if possible).',
+                  'If you encounter a technical issue, please email us immediately at support@colorsnap.com with a description and a screenshot (if possible).',
                 );
               },
             ),
@@ -190,7 +184,7 @@ class HelpPage extends StatelessWidget {
                 _showHelpDialog(
                   context,
                   'General Inquiry',
-                  'For all other non-technical questions, please email us at info@colorsnap.com.',
+                  'For all non-technical inquiries or general questions, please email us at info@colorsnap.com.',
                 );
               },
             ),
@@ -202,7 +196,7 @@ class HelpPage extends StatelessWidget {
                 _showHelpDialog(
                   context,
                   'Feedback',
-                  'We value your feedback! Send us your ideas for new features or improvements to feedback@colorsnap.com.',
+                  'We value your input! Share your ideas for new features or improvements by emailing us at feedback@colorsnap.com.',
                 );
               },
             ),
