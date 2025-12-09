@@ -5,6 +5,7 @@ import '../../models/design.dart';
 import 'design_page.dart';
 import 'package:provider/provider.dart';
 import '../../state/app_state.dart';
+import '../csw/login_page.dart';
 
 //디자인카드 위젯
 class DesignCard extends StatelessWidget {
@@ -141,6 +142,36 @@ class LibraryPage extends StatelessWidget {
               if (index == 0) {
                 return GestureDetector(
                   onTap: () {
+                    if (!appState.isLoggedIn) {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Login Required'),
+                            content: const Text(
+                                'Please sign in to create a new design.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const LoginPage(),
+                                    ),
+                                  );
+                                },
+                                child: const Text('Log In'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      return; // 로그인이 안 되어 있으면 여기서 함수 종료
+                    }
                     final newDesign = Design(
                       id: null,
                       text: 'hello',
