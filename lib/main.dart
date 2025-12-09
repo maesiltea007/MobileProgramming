@@ -54,15 +54,60 @@ Future<void> main() async {
   );
 }
 
+final ThemeData _lightTheme = ThemeData(
+  primarySwatch: Colors.blue,
+  brightness: Brightness.light,
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Colors.white,
+    foregroundColor: Colors.black,
+    elevation: 0,
+  ),
+  scaffoldBackgroundColor: Colors.white,
+  bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+    selectedItemColor: Colors.blue,
+    unselectedItemColor: Colors.grey,
+    type: BottomNavigationBarType.fixed,
+    backgroundColor: Colors.white,
+  ),
+);
+
+final ThemeData _darkTheme = ThemeData(
+  primarySwatch: Colors.blue,
+  brightness: Brightness.dark,
+  appBarTheme: AppBarTheme(
+    backgroundColor: Colors.grey[900],
+    foregroundColor: Colors.white,
+    elevation: 0,
+  ),
+  scaffoldBackgroundColor: Colors.black,
+  cardColor: Colors.grey[850],
+  dialogBackgroundColor: Colors.grey[800],
+  textTheme: const TextTheme(
+    bodyLarge: TextStyle(color: Colors.white70),
+    bodyMedium: TextStyle(color: Colors.white70),
+    titleMedium: TextStyle(color: Colors.white),
+    titleLarge: TextStyle(color: Colors.white),
+  ),
+  bottomNavigationBarTheme: BottomNavigationBarThemeData(
+    selectedItemColor: Colors.blue,
+    unselectedItemColor: Colors.grey[600],
+    type: BottomNavigationBarType.fixed,
+    backgroundColor: Colors.grey[900],
+  ),
+);
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
     return MaterialApp(
       title: 'Team Project App',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: appState.isDarkMode ? _darkTheme : _lightTheme,
+      // theme: ThemeData(primarySwatch: Colors.blue),
       home: const MainNavigator(),
       routes: {
         '/mypage': (context) => const MyPage(),

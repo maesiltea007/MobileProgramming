@@ -13,6 +13,14 @@ class AppState extends ChangeNotifier {
   Color mainColor = Colors.blueAccent;
   double fontSize = 20;
 
+  bool _isDarkMode = false;
+  bool get isDarkMode => _isDarkMode;
+
+  void toggleDarkMode() {
+    _isDarkMode = !_isDarkMode;
+    notifyListeners();
+  }
+
   // 로그인 실행
   void login(String userId, String nickname) {
     currentUserId = userId;
