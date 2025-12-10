@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import '../services/ranking_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -38,6 +39,11 @@ class AppState extends ChangeNotifier {
     currentNickname = null;
     isLoggedIn = false;
     notifyListeners();
+
+    final likesBox = Hive.box('likesbox');
+    for (var key in likesBox.keys) {
+      likesBox.put(key, false);
+    }
   }
 
   // Firebase 인증 상태를 수신하여 AppState를 초기화하는 함수
