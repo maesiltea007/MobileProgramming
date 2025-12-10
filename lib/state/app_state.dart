@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/ranking_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../services/design_repository.dart';
 
 class AppState extends ChangeNotifier {
   // 로그인 변수
@@ -160,28 +161,58 @@ class AppState extends ChangeNotifier {
   // 회원 탈퇴 함수
   Future<void> deleteAccount() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      try {
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).delete();
 
+    if (user != null) {
+      final uid = user.uid;
+
+      try {
+        // ------------------------------
+        // 1) Hive 디자인 중 ownerId == uid 인 것만 추출
+        // ------------------------------
+        final allIds = DesignRepository.getAllIds();
+        final myDesignIds = <String>[];
+
+        for (final id in allIds) {
+          final design = DesignRepository.get(id);
+          if (design != null && design.ownerId == uid) {
+            myDesignIds.add(id);
+          }
+        }
+
+        // ------------------------------
+        // 2) 해당 디자인들만 Hive에서 삭제
+        // ------------------------------
+        for (final designId in myDesignIds) {
+          DesignRepository.delete(designId);
+          RankingService.rankingBox.delete(designId);
+          RankingService.likesBox.delete(designId);
+        }
+
+        // ------------------------------
+        // 3) Firestore user 문서 삭제
+        // ------------------------------
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .delete();
+
+        // ------------------------------
+        // 4) Firebase Auth 계정 삭제
+        // ------------------------------
         await user.delete();
 
+        // ------------------------------
+        // 5) 앱 상태 초기화
+        // ------------------------------
         currentUserId = null;
         currentNickname = null;
         isLoggedIn = false;
         notifyListeners();
-
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'requires-recent-login') {
-          throw e;
-        } else {
-          print("Account deletion failed: ${e.message}");
-          throw Exception(e.message);
-        }
       } catch (e) {
         print("Error deleting account: $e");
         throw Exception("Failed to delete account");
       }
     }
   }
+
 }
