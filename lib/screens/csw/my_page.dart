@@ -16,7 +16,6 @@ class MyPage extends StatelessWidget {
       body: Consumer<AppState>(
         builder: (context, appState, child) {
           if (appState.isLoggedIn) {
-            // 🔥 닉네임이 null이면 기본값 'User'로 대체
             final nickname = appState.currentNickname ?? 'User';
             return _buildLoggedInPage(context, nickname);
           } else {
@@ -29,53 +28,55 @@ class MyPage extends StatelessWidget {
 
   // 로그인하지 않았을 때
   Widget _buildLoggedOutPage(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 350.0),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.account_circle,
-              size: 80,
-              color: Colors.grey,
-            ),
-            const SizedBox(height: 24),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 40.0),
-              child: Column(
-                children: [
-                  Text(
-                    'Account Required',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    'Log in or sign up to save your own designs and participate in rankings.',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 80.0, horizontal: 16.0),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.account_circle,
+                size: 80,
+                color: Colors.grey,
               ),
-            ),
-            const SizedBox(height: 40),
-            SizedBox(
-              width: 250,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pushNamed(context, '/login'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  backgroundColor: const Color(0xFF3B2ECC),
-                  foregroundColor: Colors.white,
+              const SizedBox(height: 24),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 40.0),
+                child: Column(
+                  children: [
+                    Text(
+                      'Account Required',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      'Log in or sign up to save your own designs and participate in rankings.',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
-                child: const Text('Log in', style: TextStyle(fontSize: 18)),
               ),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pushNamed(context, '/signup'),
-              child: const Text('Sign up', style: TextStyle(fontSize: 16, color: Colors.grey)),
-            ),
-          ],
+              const SizedBox(height: 40),
+              SizedBox(
+                width: 250,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(context, '/login'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    backgroundColor: const Color(0xFF3B2ECC),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Log in', style: TextStyle(fontSize: 18)),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pushNamed(context, '/signup'),
+                child: const Text('Sign up', style: TextStyle(fontSize: 16, color: Colors.grey)),
+              ),
+            ],
+          ),
         ),
       ),
     );
