@@ -70,8 +70,6 @@ class _ColorPickerPageState extends State<ColorPickerPage> {
   }
   Future<void> _saveColorToHive(String userId) async {
     final designsBox = Hive.box('designsbox');
-    final rankingBox = Hive.box('rankingbox');
-    final likesBox = Hive.box('likesbox');
 
     final now = DateTime.now();
     final String designId = 'd_${now.millisecondsSinceEpoch}';
@@ -87,8 +85,6 @@ class _ColorPickerPageState extends State<ColorPickerPage> {
     );
 
     designsBox.put(designId, design.toMap());
-    rankingBox.put(designId, 0);
-    likesBox.put(designId, false);
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('The color has been saved.')),
