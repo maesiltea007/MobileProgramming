@@ -329,8 +329,11 @@ class _DesignPageState extends State<DesignPage> {
         if (c != null) {
           setState(() {
             _backgroundColor = c;
-            _bgHexController.text = _colorToHex(c);
           });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Invalid color. Use a hex like #RRGGBB.')),
+          );
         }
       },
       onCircleTap: () async {
@@ -359,8 +362,11 @@ class _DesignPageState extends State<DesignPage> {
         if (c != null) {
           setState(() {
             _fontColor = c;
-            _fontHexController.text = _colorToHex(c);
           });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Invalid color. Use a hex like #RRGGBB.')),
+          );
         }
       },
       onCircleTap: () async {
